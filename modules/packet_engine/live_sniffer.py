@@ -1,6 +1,6 @@
 import logging
 import threading
-from scapy.all import sniff, IP, TCP, UDP, ICMP
+from scapy.all import sniff, IP, TCP, UDP, ICMP, DNS, DNSQR, Raw
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -33,11 +33,23 @@ class LiveSniffer:
             src_port = 0
             dst_port = 0
 
+            flags = ""
+            payload_data = None
+            dns_query = None
+
             if TCP in pkt:
                 src_port = pkt[TCP].sport
                 dst_port = pkt[TCP].dport
+                flags = pkt[TCP].flags
                 if src_port == 80 or dst_port == 80:
                     protocol = "HTTP"
+                    if Raw in pkt:
+                        try:
+                            raw_data = pkt[Raw].load.decode('utf-8', errors='ignore')
+                            if "HTTP" in raw_data or "GET " in raw_data or "POST " in raw_data:
+                                payload_data = raw_data[:200]
+                        except:
+                            pass
                 elif src_port == 443 or dst_port == 443:
                     protocol = "HTTPS"
                 elif src_port == 53 or dst_port == 53:
@@ -54,13 +66,23 @@ class LiveSniffer:
             elif ICMP in pkt:
                 protocol = "ICMP"
 
+            # DPI: DNS Sorgularının Çıkarılması
+            if DNS in pkt and DNSQR in pkt:
+                try:
+                    dns_query = pkt[DNSQR].qname.decode('utf-8')
+                except:
+                    pass
+
             parsed_data = {
                 "src_ip": ip_src,
                 "dst_ip": ip_dst,
                 "src_port": src_port,
                 "dst_port": dst_port,
                 "protocol": protocol,
-                "length": length
+                "length": length,
+                "flags": str(flags),
+                "payload_preview": payload_data,
+                "dns_query": dns_query
             }
 
             self.parsed_packets.append(parsed_data)
