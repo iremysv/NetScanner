@@ -1,17 +1,19 @@
 import logging
-logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import threading
 from scapy.all import sniff, IP, TCP, UDP, ICMP
 
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("LiveSniffer")
 
+
 class LiveSniffer:
     """
-    Canlı ağ trafiğini dinlemek (sniffing) ve yakalanan paketleri 
+    Canlı ağ trafiğini dinlemek (sniffing) ve yakalanan paketleri
     anlık olarak ayrıştırmakla görevli sınıf. Arka planda çalışması için
     threading kullanır.
     """
+
     def __init__(self):
         self.parsed_packets = []
         self._stop_event = threading.Event()
@@ -26,7 +28,7 @@ class LiveSniffer:
             ip_src = pkt[IP].src
             ip_dst = pkt[IP].dst
             length = len(pkt)
-            
+
             protocol = "OTHER"
             src_port = 0
             dst_port = 0
@@ -50,7 +52,7 @@ class LiveSniffer:
                 "protocol": protocol,
                 "length": length
             }
-            
+
             self.parsed_packets.append(parsed_data)
 
     def _sniff_worker(self, interface=None):

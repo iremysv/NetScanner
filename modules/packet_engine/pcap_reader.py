@@ -1,17 +1,20 @@
 import os
 import logging
-logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import rdpcap, Scapy_Exception, IP, TCP, UDP, ICMP
+
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 # Logging ayarları
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("PcapReader")
 
+
 class PcapReader:
     """
-    .pcap ve .pcapng uzantılı ağ trafiği dosyalarını okumak ve 
+    .pcap ve .pcapng uzantılı ağ trafiği dosyalarını okumak ve
     içerisindeki paketleri analiz için hazırlamakla görevli sınıf.
     """
+
     def __init__(self, file_path):
         self.file_path = file_path
         self.packets = []
@@ -26,13 +29,13 @@ class PcapReader:
             return False
 
         logger.info(f"PCAP dosyası okunuyor: {self.file_path} ... Lütfen bekleyin.")
-        
+
         try:
             # Scapy ile PCAP dosyasını oku
             self.packets = rdpcap(self.file_path)
             logger.info(f"Başarıyla okundu. Toplam paket sayısı: {len(self.packets)}")
             return True
-            
+
         except Scapy_Exception as e:
             logger.error(f"PCAP okuma hatası (Scapy kaynaklı): {e}")
             return False
@@ -46,7 +49,7 @@ class PcapReader:
 
     def parse_packets(self):
         """
-        Okunan paketlerin içerisinden Kaynak/Hedef IP, Port, Protokol 
+        Okunan paketlerin içerisinden Kaynak/Hedef IP, Port, Protokol
         ve Veri Boyutu gibi bilgileri ayrıştırır (parse eder).
         """
         if not self.packets:
@@ -61,7 +64,7 @@ class PcapReader:
                 ip_src = pkt[IP].src
                 ip_dst = pkt[IP].dst
                 length = len(pkt)
-                
+
                 protocol = "OTHER"
                 src_port = 0
                 dst_port = 0
