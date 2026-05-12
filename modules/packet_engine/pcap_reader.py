@@ -1,5 +1,6 @@
 import os
 import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import rdpcap, Scapy_Exception, IP, TCP, UDP, ICMP
 
 # Logging ayarları

@@ -1,4 +1,5 @@
 import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import threading
 from scapy.all import sniff, IP, TCP, UDP, ICMP
 
@@ -58,10 +59,11 @@ class LiveSniffer:
             logger.info(f"Canlı ağ dinlemesi başlatıldı. Arayüz: {interface if interface else 'Otomatik Seçim'}")
             # stop_filter, _stop_event True olunca sniffing'i durdurur
             sniff(iface=interface, prn=self._packet_handler, stop_filter=lambda p: self._stop_event.is_set(), store=False)
-        except PermissionError:
-            logger.error("Sniffing için yeterli izin yok. Lütfen programı yönetici (sudo/root) haklarıyla çalıştırın.")
         except Exception as e:
-            logger.error(f"Sniffing sırasında beklenmeyen bir hata oluştu: {e}")
+            if "Permission" in str(e) or "root" in str(e):
+                logger.error("Sniffing için yeterli izin yok. Lütfen programı yönetici (sudo) haklarıyla çalıştırın.")
+            else:
+                logger.error(f"Sniffing sırasında beklenmeyen bir hata oluştu: {e}")
 
     def start_sniffing(self, interface=None):
         """
