@@ -8,3 +8,8 @@ RAPOR_DIZINI = "taramalar"
 
 # Versiyon ve OS Tespiti bayrakları
 DETAYLI_MOD = "-sV -O"
+
+# Trafik Analizi ve Anomali Eşik Değerleri
+PORT_SCAN_THRESHOLD = 15        # Bir IP'nin kısa sürede taradığı farklı port sayısı sınırı
+DNS_TUNNELING_THRESHOLD = 50    # Kısa sürede aşırı DNS isteği yapma sınırı
+TRAFIK_RAPOR_DIZINI = "taramalar/traffic_reports"

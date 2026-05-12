@@ -34,13 +34,23 @@ class LiveSniffer:
             dst_port = 0
 
             if TCP in pkt:
-                protocol = "TCP"
                 src_port = pkt[TCP].sport
                 dst_port = pkt[TCP].dport
+                if src_port == 80 or dst_port == 80:
+                    protocol = "HTTP"
+                elif src_port == 443 or dst_port == 443:
+                    protocol = "HTTPS"
+                elif src_port == 53 or dst_port == 53:
+                    protocol = "DNS"
+                else:
+                    protocol = "TCP"
             elif UDP in pkt:
-                protocol = "UDP"
                 src_port = pkt[UDP].sport
                 dst_port = pkt[UDP].dport
+                if src_port == 53 or dst_port == 53:
+                    protocol = "DNS"
+                else:
+                    protocol = "UDP"
             elif ICMP in pkt:
                 protocol = "ICMP"
 

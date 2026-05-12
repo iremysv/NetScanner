@@ -1,29 +1,67 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
+import time
 from core import config as Ayarlar
 from modules.nmap_integration.scanner import nmap_calistir
 from modules.nmap_integration.vulnerability import zafiyet_tara
 from reports.reporter import rapor_yaz
 
+# Paket motoru ve analiz modülleri
+from modules.packet_engine.pcap_reader import PcapReader
+from modules.packet_engine.live_sniffer import LiveSniffer
+from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
+from reports.traffic_reporter import trafik_raporu_olustur
+
 
 def ana_menu() -> None:
     while True:
-        print("\n" + "=" * 45)
-        print("      SIZMA TESTİ VE ANALİZ PANELİ      ")
-        print("=" * 45)
+        print("\n" + "=" * 55)
+        print("    NETSCANNER: AĞ TRAFİĞİ VE GÜVENLİK ANALİZ PLATFORMU    ")
+        print("=" * 55)
+        print("[ AKTİF TARAMA MODÜLLERİ (NMAP) ]")
         print("1- Hızlı Tarama (-F) [Top 100 Port]")
         print("2- Cihaz Keşfi (-sn) [Ping Scan]")
         print("3- Servis Versiyon Tespiti (-sV)")
         print("4- İşletim Sistemi Analizi (-O)")
         print("5- Agresif Tarama (-A) [Hepsi Bir Arada]")
         print("6- Zafiyet Taraması (NSE Scripts)")
-        print("7- Çıkış")
-        print("=" * 45)
-        secim = input("\nSeçiminiz (1-7): ")
-        if secim == "7":
+        print("\n[ TRAFİK ANALİZ MODÜLLERİ (PACKET ENGINE) ]")
+        print("7- PCAP Ağ Trafiği Analizi ve Anomali Tespiti")
+        print("8- Canlı Ağ İzleme (Live Sniffer) ve Tehdit Algılama")
+        print("\n9- Çıkış")
+        print("=" * 55)
+        
+        secim = input("\nSeçiminiz (1-9): ")
+        if secim == "9":
             print("[*] Program kapatılıyor. İyi çalışmalar İrem!")
             break
+
+        # PCAP ve Sniffer Modülleri için IP isteme
+        if secim in ["7", "8"]:
+            if secim == "7":
+                dosya_yolu = input("Analiz edilecek .pcap dosyasının yolu: ")
+                if not dosya_yolu:
+                    continue
+                reader = PcapReader(dosya_yolu)
+                if reader.read_pcap():
+                    paketler = reader.parse_packets()
+                    analyzer = TrafficAnalyzer(paketler)
+                    sonuclar = analyzer.analyze()
+                    trafik_raporu_olustur("pcap_analiz", sonuclar)
+            elif secim == "8":
+                print("\n[*] Canlı Ağ İzleme Başlatılıyor... (Durdurmak için ENTER'a basın)")
+                sniffer = LiveSniffer()
+                sniffer.start_sniffing()
+                input() # Enter bekler
+                sniffer.stop_sniffing()
+                paketler = sniffer.get_parsed_packets()
+                analyzer = TrafficAnalyzer(paketler)
+                sonuclar = analyzer.analyze()
+                trafik_raporu_olustur("live_sniff", sonuclar)
+            continue
+
+        # Nmap modülleri için IP isteme
         hedef = input("Hedef IP veya Domain: ")
         if not hedef:
             continue
@@ -50,7 +88,7 @@ def ana_menu() -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="NetScanner: Nmap Entegrasyonlu PCAP Analiz ve Anomali Tespit Motoru"
+        description="NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu"
     )
     # PCAP okuma argümanı
     parser.add_argument("-p", "--pcap", help="Analiz edilecek .pcap dosyasının yolu")
@@ -63,13 +101,12 @@ def main():
         ana_menu()
     elif args.pcap:
         print(f"[*] {args.pcap} dosyası okunuyor ve analiz ediliyor...")
-        from modules.packet_engine.pcap_reader import PcapReader
         reader = PcapReader(args.pcap)
         if reader.read_pcap():
             paketler = reader.parse_packets()
-            print("\n[*] Parse Edilen İlk 5 Paket:")
-            for p in paketler[:5]:
-                print(p)
+            analyzer = TrafficAnalyzer(paketler)
+            sonuclar = analyzer.analyze()
+            trafik_raporu_olustur("cli_pcap", sonuclar)
     elif args.test_nmap and args.target:
         print(f"[*] {args.target} için entegrasyon testi başlatılıyor...")
         hiz = Ayarlar.TARAMA_HIZI
