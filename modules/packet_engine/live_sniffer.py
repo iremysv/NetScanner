@@ -48,7 +48,7 @@ class LiveSniffer:
                             raw_data = pkt[Raw].load.decode('utf-8', errors='ignore')
                             if "HTTP" in raw_data or "GET " in raw_data or "POST " in raw_data:
                                 payload_data = raw_data[:200]
-                        except:
+                        except Exception:
                             pass
                 elif src_port == 443 or dst_port == 443:
                     protocol = "HTTPS"
@@ -70,7 +70,7 @@ class LiveSniffer:
             if DNS in pkt and DNSQR in pkt:
                 try:
                     dns_query = pkt[DNSQR].qname.decode('utf-8')
-                except:
+                except Exception:
                     pass
 
             parsed_data = {

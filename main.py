@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import argparse
 import sys
-import time
 from core import config as Ayarlar
 from modules.nmap_integration.scanner import nmap_calistir
 from modules.nmap_integration.vulnerability import zafiyet_tara
