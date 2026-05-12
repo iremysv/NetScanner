@@ -7,6 +7,7 @@ from core import config as Ayarlar
 
 logger = logging.getLogger("TrafficAnalyzer")
 
+
 class TrafficAnalyzer:
     """
     Ağ trafiğindeki paket listesini alarak istatistik çıkaran,
@@ -18,13 +19,13 @@ class TrafficAnalyzer:
         self.packets = packets
         self.ip_frequencies = defaultdict(int)
         self.protocol_distribution = defaultdict(int)
-        
+
         # Anomali tespiti için veri yapıları
         self.ip_to_ports = defaultdict(set)
         self.dns_requests = defaultdict(int)
         self.syn_counts = defaultdict(int)
         self.large_transfers = []
-        
+
         # DPI için (Şüpheli Payload ve DNS tünelleme)
         self.suspicious_dns = []
         self.suspicious_http = []
@@ -37,7 +38,9 @@ class TrafficAnalyzer:
             logger.warning("Analiz edilecek paket bulunamadı.")
             return {}
 
-        logger.info(f"Derin Paket Analizi başlatılıyor... Toplam paket: {len(self.packets)}")
+        logger.info(
+            f"Derin Paket Analizi başlatılıyor... Toplam paket: {len(self.packets)}"
+        )
 
         large_payload_thresh = getattr(Ayarlar, "LARGE_PAYLOAD_THRESHOLD", 50000)
 
@@ -61,7 +64,7 @@ class TrafficAnalyzer:
             # Port Scan Verisi
             if dst_port:
                 self.ip_to_ports[src_ip].add(dst_port)
-            
+
             # DNS Tunneling Verisi
             if protocol == "DNS":
                 self.dns_requests[src_ip] += 1
@@ -79,7 +82,11 @@ class TrafficAnalyzer:
             # HTTP DPI Anomaly (Örn: Basit sql/xss veya bot kontrolü)
             if protocol == "HTTP" and payload:
                 payload_lower = payload.lower()
-                if "sql" in payload_lower or "script" in payload_lower or "curl" in payload_lower:
+                if (
+                    "sql" in payload_lower
+                    or "script" in payload_lower
+                    or "curl" in payload_lower
+                ):
                     self.suspicious_http.append((src_ip, payload))
 
         # En aktif 10 IP'nin konumlarını OSINT ile bul
@@ -91,14 +98,16 @@ class TrafficAnalyzer:
             "total_packets": len(self.packets),
             "top_talkers": top_talkers_with_geo,
             "protocol_distribution": dict(self.protocol_distribution),
-            "anomalies": self._detect_anomalies()
+            "anomalies": self._detect_anomalies(),
         }
 
         logger.info("Trafik analizi tamamlandı.")
         return results
 
     def _get_top_talkers(self, limit: int = 10) -> dict:
-        sorted_ips = sorted(self.ip_frequencies.items(), key=lambda x: x[1], reverse=True)
+        sorted_ips = sorted(
+            self.ip_frequencies.items(), key=lambda x: x[1], reverse=True
+        )
         return dict(sorted_ips[:limit])
 
     def _get_geoip(self, ip_str: str) -> str:
@@ -114,15 +123,19 @@ class TrafficAnalyzer:
             return self.geoip_cache[ip_str]
 
         try:
-            response = requests.get(f"http://ip-api.com/json/{ip_str}?fields=country,city", timeout=2)
+            response = requests.get(
+                f"http://ip-api.com/json/{ip_str}?fields=country,city", timeout=2
+            )
             if response.status_code == 200:
                 data = response.json()
-                location = f"{data.get('country', 'Bilinmiyor')} - {data.get('city', '')}"
+                location = (
+                    f"{data.get('country', 'Bilinmiyor')} - {data.get('city', '')}"
+                )
                 self.geoip_cache[ip_str] = location
                 return location
         except Exception as e:
             logger.debug(f"GeoIP sorgusu başarısız: {e}")
-        
+
         self.geoip_cache[ip_str] = "Sorgulanamadı"
         return "Sorgulanamadı"
 
@@ -140,53 +153,65 @@ class TrafficAnalyzer:
         port_scan_threshold = getattr(Ayarlar, "PORT_SCAN_THRESHOLD", 15)
         for ip, ports in self.ip_to_ports.items():
             if len(ports) > port_scan_threshold:
-                anomalies.append({
-                    "type": "PORT_SCAN",
-                    "source_ip": ip,
-                    "details": f"{len(ports)} farklı porta erişim denemesi tespit edildi."
-                })
+                anomalies.append(
+                    {
+                        "type": "PORT_SCAN",
+                        "source_ip": ip,
+                        "details": f"{len(ports)} farklı porta erişim denemesi tespit edildi.",
+                    }
+                )
 
         # 2. DNS Tunneling Tespiti
         dns_threshold = getattr(Ayarlar, "DNS_TUNNELING_THRESHOLD", 50)
         for ip, req_count in self.dns_requests.items():
             if req_count > dns_threshold:
-                anomalies.append({
-                    "type": "DNS_TUNNELING_SUSPICION",
-                    "source_ip": ip,
-                    "details": f"{req_count} adet anormal DNS isteği tespit edildi."
-                })
-        
+                anomalies.append(
+                    {
+                        "type": "DNS_TUNNELING_SUSPICION",
+                        "source_ip": ip,
+                        "details": f"{req_count} adet anormal DNS isteği tespit edildi.",
+                    }
+                )
+
         for ip, domain in self.suspicious_dns:
-            anomalies.append({
-                "type": "DNS_DPI_ANOMALY",
-                "source_ip": ip,
-                "details": f"Şüpheli (çok uzun) DNS sorgusu: {domain}"
-            })
+            anomalies.append(
+                {
+                    "type": "DNS_DPI_ANOMALY",
+                    "source_ip": ip,
+                    "details": f"Şüpheli (çok uzun) DNS sorgusu: {domain}",
+                }
+            )
 
         # 3. SYN Flood Tespiti
         syn_threshold = getattr(Ayarlar, "SYN_FLOOD_THRESHOLD", 100)
         for ip, syn_count in self.syn_counts.items():
             if syn_count > syn_threshold:
-                anomalies.append({
-                    "type": "SYN_FLOOD_DDOS",
-                    "source_ip": ip,
-                    "details": f"{syn_count} adet sadece SYN paketi (ACK beklenmeyen) gönderildi."
-                })
+                anomalies.append(
+                    {
+                        "type": "SYN_FLOOD_DDOS",
+                        "source_ip": ip,
+                        "details": f"{syn_count} adet sadece SYN paketi (ACK beklenmeyen) gönderildi.",
+                    }
+                )
 
         # 4. Data Exfiltration Tespiti
         for src, dst, length in self.large_transfers:
-            anomalies.append({
-                "type": "DATA_EXFILTRATION",
-                "source_ip": src,
-                "details": f"Aşırı büyük payload aktarımı ({length} byte) Hedef: {dst}"
-            })
+            anomalies.append(
+                {
+                    "type": "DATA_EXFILTRATION",
+                    "source_ip": src,
+                    "details": f"Aşırı büyük payload aktarımı ({length} byte) Hedef: {dst}",
+                }
+            )
 
         # 5. HTTP DPI Tespiti
         for ip, payload in self.suspicious_http:
-            anomalies.append({
-                "type": "HTTP_MALICIOUS_PAYLOAD",
-                "source_ip": ip,
-                "details": f"HTTP paketinde şüpheli veri tespit edildi: {payload[:50]}..."
-            })
+            anomalies.append(
+                {
+                    "type": "HTTP_MALICIOUS_PAYLOAD",
+                    "source_ip": ip,
+                    "details": f"HTTP paketinde şüpheli veri tespit edildi: {payload[:50]}...",
+                }
+            )
 
         return anomalies

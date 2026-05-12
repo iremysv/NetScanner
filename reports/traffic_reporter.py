@@ -36,7 +36,9 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
         f.write("[EN ÇOK TRAFİK ÜRETEN IP'LER (TOP TALKERS & OSINT)]\n")
         top_talkers = sonuclar.get("top_talkers", [])
         for talker in top_talkers:
-            f.write(f"  - {talker['ip']}: {talker['count']} paket [Konum: {talker['location']}]\n")
+            f.write(
+                f"  - {talker['ip']}: {talker['count']} paket [Konum: {talker['location']}]\n"
+            )
         f.write("\n")
 
         f.write("[TESPİT EDİLEN ANOMALİLER]\n")
@@ -45,7 +47,9 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
             f.write("  - Herhangi bir anomali tespit edilmedi.\n")
         else:
             for anomali in anomaliler:
-                f.write(f"  ! DİKKAT [{anomali.get('type')}]: IP: {anomali.get('source_ip')} -> {anomali.get('details')}\n")
+                f.write(
+                    f"  ! DİKKAT [{anomali.get('type')}]: IP: {anomali.get('source_ip')} -> {anomali.get('details')}\n"
+                )
         f.write("\n" + "-" * 40 + "\n")
 
     # 3. Profesyonel HTML Formatında Kaydetme
@@ -53,12 +57,14 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
     with open(dosya_adi_html, "w", encoding="utf-8") as f:
         f.write(html_content)
 
-    print(f"\n[+] Trafik analiz raporu oluşturuldu:\n    TXT: {dosya_adi_txt}\n    JSON: {dosya_adi_json}\n    HTML: {dosya_adi_html}")
+    print(
+        f"\n[+] Trafik analiz raporu oluşturuldu:\n    TXT: {dosya_adi_txt}\n    JSON: {dosya_adi_json}\n    HTML: {dosya_adi_html}"
+    )
 
 
 def _generate_html(tarih: str, sonuclar: dict) -> str:
     """HTML rapor içeriğini dinamik olarak oluşturur."""
-    
+
     # CSS Stilleri
     css = """
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }

@@ -30,7 +30,7 @@ def ana_menu() -> None:
         print("8- Canlı Ağ İzleme (Live Sniffer) ve Tehdit Algılama")
         print("\n9- Çıkış")
         print("=" * 55)
-        
+
         secim = input("\nSeçiminiz (1-9): ")
         if secim == "9":
             print("[*] Program kapatılıyor. İyi çalışmalar İrem!")
@@ -49,10 +49,12 @@ def ana_menu() -> None:
                     sonuclar = analyzer.analyze()
                     trafik_raporu_olustur("pcap_analiz", sonuclar)
             elif secim == "8":
-                print("\n[*] Canlı Ağ İzleme Başlatılıyor... (Durdurmak için ENTER'a basın)")
+                print(
+                    "\n[*] Canlı Ağ İzleme Başlatılıyor... (Durdurmak için ENTER'a basın)"
+                )
                 sniffer = LiveSniffer()
                 sniffer.start_sniffing()
-                input() # Enter bekler
+                input()  # Enter bekler
                 sniffer.stop_sniffing()
                 paketler = sniffer.get_parsed_packets()
                 analyzer = TrafficAnalyzer(paketler)
@@ -92,7 +94,11 @@ def main():
     # PCAP okuma argümanı
     parser.add_argument("-p", "--pcap", help="Analiz edilecek .pcap dosyasının yolu")
     parser.add_argument("-t", "--target", help="Hedef IP veya Domain adresi")
-    parser.add_argument("--test-nmap", action="store_true", help="Nmap entegrasyonunu test et (Hızlı Tarama)")
+    parser.add_argument(
+        "--test-nmap",
+        action="store_true",
+        help="Nmap entegrasyonunu test et (Hızlı Tarama)",
+    )
 
     args = parser.parse_args()
 

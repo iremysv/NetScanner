@@ -1,13 +1,26 @@
 import os
 import logging
 from tqdm import tqdm
-from scapy.all import PcapReader as ScapyPcapReader, Scapy_Exception, IP, TCP, UDP, ICMP, DNS, DNSQR, Raw
+from scapy.all import (
+    PcapReader as ScapyPcapReader,
+    Scapy_Exception,
+    IP,
+    TCP,
+    UDP,
+    ICMP,
+    DNS,
+    DNSQR,
+    Raw,
+)
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 # Logging ayarları
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger("PcapReader")
+
 
 class PcapReader:
     """
@@ -30,24 +43,30 @@ class PcapReader:
             logger.error(f"Dosya bulunamadı: {self.file_path}")
             return False
 
-        logger.info(f"PCAP dosyası DPI (Derin İnceleme) ile okunuyor: {self.file_path} ... Lütfen bekleyin.")
+        logger.info(
+            f"PCAP dosyası DPI (Derin İnceleme) ile okunuyor: {self.file_path} ... Lütfen bekleyin."
+        )
         file_size = os.path.getsize(self.file_path)
 
         try:
             # PcapReader ile iteratif okuma
             with ScapyPcapReader(self.file_path) as pcap_reader:
-                with tqdm(total=file_size, unit='B', unit_scale=True, desc="PCAP İşleniyor") as pbar:
+                with tqdm(
+                    total=file_size, unit="B", unit_scale=True, desc="PCAP İşleniyor"
+                ) as pbar:
                     for pkt in pcap_reader:
                         # pkt.wirelen bize paketin tahmini bayt boyutunu verir
-                        pkt_len = pkt.wirelen if hasattr(pkt, 'wirelen') else len(pkt)
+                        pkt_len = pkt.wirelen if hasattr(pkt, "wirelen") else len(pkt)
                         pbar.update(pkt_len)
-                        
+
                         # Anında Parse Et (Bellek Tasarrufu)
                         parsed_pkt = self._extract_packet_info(pkt)
                         if parsed_pkt:
                             self.parsed_data.append(parsed_pkt)
 
-            logger.info(f"Başarıyla okundu ve ayrıştırıldı. Toplam paket sayısı: {len(self.parsed_data)}")
+            logger.info(
+                f"Başarıyla okundu ve ayrıştırıldı. Toplam paket sayısı: {len(self.parsed_data)}"
+            )
             self._read_success = True
             return True
 
@@ -68,7 +87,9 @@ class PcapReader:
         sadece hazırlanan veriyi döndürür.
         """
         if not self._read_success:
-            logger.warning("Ayrıştırılacak paket bulunamadı. Lütfen önce read_pcap() çalıştırın.")
+            logger.warning(
+                "Ayrıştırılacak paket bulunamadı. Lütfen önce read_pcap() çalıştırın."
+            )
             return []
         return self.parsed_data
 
@@ -82,7 +103,7 @@ class PcapReader:
         ip_src = pkt[IP].src
         ip_dst = pkt[IP].dst
         length = len(pkt)
-        
+
         protocol = "OTHER"
         src_port = 0
         dst_port = 0
@@ -94,15 +115,19 @@ class PcapReader:
             src_port = pkt[TCP].sport
             dst_port = pkt[TCP].dport
             flags = pkt[TCP].flags
-            
+
             if src_port == 80 or dst_port == 80:
                 protocol = "HTTP"
                 if Raw in pkt:
                     try:
                         # HTTP User-Agent veya URL çıkartmayı deneyelim
-                        raw_data = pkt[Raw].load.decode('utf-8', errors='ignore')
-                        if "HTTP" in raw_data or "GET " in raw_data or "POST " in raw_data:
-                            payload_data = raw_data[:200] # İlk 200 karakteri sakla
+                        raw_data = pkt[Raw].load.decode("utf-8", errors="ignore")
+                        if (
+                            "HTTP" in raw_data
+                            or "GET " in raw_data
+                            or "POST " in raw_data
+                        ):
+                            payload_data = raw_data[:200]  # İlk 200 karakteri sakla
                     except Exception:
                         pass
             elif src_port == 443 or dst_port == 443:
@@ -111,7 +136,7 @@ class PcapReader:
                 protocol = "DNS"
             else:
                 protocol = "TCP"
-                
+
         elif UDP in pkt:
             src_port = pkt[UDP].sport
             dst_port = pkt[UDP].dport
@@ -119,14 +144,14 @@ class PcapReader:
                 protocol = "DNS"
             else:
                 protocol = "UDP"
-                
+
         elif ICMP in pkt:
             protocol = "ICMP"
 
         # DPI: DNS Sorgularının Çıkarılması
         if DNS in pkt and DNSQR in pkt:
             try:
-                dns_query = pkt[DNSQR].qname.decode('utf-8')
+                dns_query = pkt[DNSQR].qname.decode("utf-8")
             except Exception:
                 pass
 
@@ -139,5 +164,5 @@ class PcapReader:
             "length": length,
             "flags": str(flags),
             "payload_preview": payload_data,
-            "dns_query": dns_query
+            "dns_query": dns_query,
         }
