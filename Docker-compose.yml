@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  netscanner:
+    build: .
+    network_mode: "host"
+    volumes:
+      - ./data:/app/data

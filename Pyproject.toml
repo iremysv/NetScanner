@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NetScanner"
+version = "1.0.0"
+description = "Advanced Network Traffic and Security Analysis Platform"
+authors = [
+  { name="Irem Yasav" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "scapy",
+    "python-nmap",
+    "colorama"
+]
