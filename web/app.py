@@ -86,3 +86,39 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({"type": "ping", "message": "Alive"})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+# PCAP Dosya Yükleme ve Analiz API
+@app.post("/api/pcap_upload")
+async def upload_pcap(file: UploadFile = File(...)):
+    await manager.broadcast({"type": "info", "message": f"'{file.filename}' dosyası sisteme yükleniyor ve analiz ediliyor..."})
+    
+    # Geçici dosya oluştur ve gelen içeriği yaz
+    temp_dir = tempfile.gettempdir()
+    temp_pcap_path = os.path.join(temp_dir, file.filename)
+    
+    try:
+        with open(temp_pcap_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+            
+        # PcapReader ile oku
+        reader = PcapReader(temp_pcap_path)
+        if reader.read_pcap():
+            paketler = reader.parse_packets()
+            analyzer_instance = TrafficAnalyzer(paketler)
+            sonuclar = analyzer_instance.analyze()
+            
+            # Rapor oluştur
+            trafik_raporu_olustur("web_pcap", sonuclar)
+            
+            await manager.broadcast({"type": "success", "message": f"'{file.filename}' analizi tamamlandı."})
+            return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
+        else:
+            return {"status": "error", "message": "PCAP dosyası okunamadı veya geçersiz."}
+            
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        if os.path.exists(temp_pcap_path):
+            os.remove(temp_pcap_path)
+
