@@ -28,16 +28,18 @@ def ana_menu() -> None:
         print("\n[ TRAFİK ANALİZ MODÜLLERİ (PACKET ENGINE) ]")
         print("7- PCAP Ağ Trafiği Analizi ve Anomali Tespiti")
         print("8- Canlı Ağ İzleme (Live Sniffer) ve Tehdit Algılama")
-        print("\n9- Çıkış")
+        print("\n[ WEB ARAYÜZÜ ]")
+        print("9- Web Arayüzünü (Dashboard) Başlat")
+        print("\n10- Çıkış")
         print("=" * 55)
 
-        secim = input("\nSeçiminiz (1-9): ")
-        if secim == "9":
+        secim = input("\nSeçiminiz (1-10): ")
+        if secim == "10":
             print("[*] Program kapatılıyor. İyi çalışmalar İrem!")
             break
 
         # PCAP ve Sniffer Modülleri için IP isteme
-        if secim in ["7", "8"]:
+        if secim in ["7", "8", "9"]:
             if secim == "7":
                 dosya_yolu = input("Analiz edilecek .pcap dosyasının yolu: ")
                 if not dosya_yolu:
@@ -60,6 +62,13 @@ def ana_menu() -> None:
                 analyzer = TrafficAnalyzer(paketler)
                 sonuclar = analyzer.analyze()
                 trafik_raporu_olustur("live_sniff", sonuclar)
+            elif secim == "9":
+                print("\n[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan http://localhost:8000 adresine gidin. Çıkmak için CTRL+C yapın.")
+                try:
+                    import uvicorn
+                    uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
+                except ImportError:
+                    print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
             continue
 
         # Nmap modülleri için IP isteme
@@ -99,6 +108,11 @@ def main():
         action="store_true",
         help="Nmap entegrasyonunu test et (Hızlı Tarama)",
     )
+    parser.add_argument(
+        "--web",
+        action="store_true",
+        help="Web arayüzünü (Dashboard) başlatır",
+    )
 
     args = parser.parse_args()
 
@@ -116,6 +130,13 @@ def main():
         print(f"[*] {args.target} için entegrasyon testi başlatılıyor...")
         hiz = Ayarlar.TARAMA_HIZI
         nmap_calistir(["nmap", hiz, "-F", args.target], args.target, "test_tarama")
+    elif args.web:
+        print("[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan http://localhost:8000 adresine gidin.")
+        try:
+            import uvicorn
+            uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
+        except ImportError:
+            print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
     else:
         parser.print_help()
 

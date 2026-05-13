@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetScanner | Gelişmiş Tehdit Analiz Merkezi</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel">
+            <div class="logo-area">
+                <h2><i class="fa-solid fa-shield-halved"></i> NetScanner</h2>
+                <span class="badge">PRO</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+                <li><i class="fa-solid fa-satellite-dish"></i> Canlı İzleme</li>
+                <li><i class="fa-solid fa-network-wired"></i> Nmap Taraması</li>
+                <li><i class="fa-solid fa-file-shield"></i> PCAP Analizi</li>
+                <li><i class="fa-solid fa-gear"></i> Ayarlar</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>Siber Güvenlik Komuta Merkezi</h1>
+                <div class="status-indicator">
+                    <span class="pulse"></span>
+                    <span>Sistem Aktif</span>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <!-- Quick Scan Widget -->
+                <div class="widget glass-panel span-2">
+                    <div class="widget-header">
+                        <h3><i class="fa-solid fa-bolt"></i> Hedef Tarama (Nmap)</h3>
+                    </div>
+                    <div class="widget-body">
+                        <form id="scan-form">
+                            <div class="input-group">
+                                <input type="text" id="target-ip" placeholder="Hedef IP veya Domain girin (Örn: scanme.nmap.org)" required>
+                                <button type="submit" class="btn-primary" id="btn-scan">
+                                    <i class="fa-solid fa-play"></i> Başlat
+                                </button>
+                            </div>
+                            <div class="scan-options">
+                                <label><input type="radio" name="scan_type" value="quick" checked> Hızlı Tarama</label>
+                                <label><input type="radio" name="scan_type" value="deep"> Derin Tarama (-sV -O)</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Stats Widget -->
+                <div class="widget glass-panel">
+                    <div class="widget-header">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Anomali İstatistikleri</h3>
+                    </div>
+                    <div class="widget-body stat-body">
+                        <div class="stat-card warning">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">Port Tarama</span>
+                        </div>
+                        <div class="stat-card danger">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">DNS Tunneling</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Output Widget -->
+                <div class="widget glass-panel span-3 terminal-widget">
+                    <div class="widget-header">
+                        <h3><i class="fa-solid fa-terminal"></i> Analiz Çıktısı</h3>
+                        <button id="clear-btn" class="btn-icon"><i class="fa-solid fa-eraser"></i></button>
+                    </div>
+                    <div class="widget-body terminal-body">
+                        <pre id="terminal-output">NetScanner başlatıldı. Sistem hazır. Hedef belirleyerek taramayı başlatın...</pre>
+                        <div class="loader-line" id="scan-loader" style="display: none;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
