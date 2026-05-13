@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Isu_logo.svg" alt="İstinye Üniversitesi Logo" width="300">
+  <img src="ISU_LOGO_TR.png" alt="İstinye Üniversitesi Logo" width="300">
 </p>
 
 # 🛡️ NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
@@ -28,12 +28,13 @@ NetScanner; ağ trafiğini derinlemesine analiz eden, PCAP dosyalarını okuyara
 
 ## 🚀 Özellikler
 
-* 📦 **PCAP Analizi:** Ağ trafik dosyalarını (.pcap) okuma, ayrıştırma ve istatistiksel analiz.
-* 🌐 **Canlı Trafik İzleme (Sniffing):** Ağ arayüzleri üzerinden gerçek zamanlı paket yakalama ve analiz etme.
-* 🛡️ **Nmap Entegrasyonu:** Hedef sistemler üzerinde detaylı port tarama, servis tespiti ve zafiyet analizi.
-* 📊 **Protokol Analizi:** HTTP/HTTPS isteklerinin tespiti, DNS anormallikleri (örn. DNS tunneling) ve IP istatistikleri üretimi.
-* 🧠 **Anormallik ve Zafiyet Tespiti:** Ağ trafiği içindeki şüpheli paternleri algılayarak güvenlik tehditlerini raporlama.
-* 📂 **Otomatik Raporlama:** Tüm analiz sonuçlarının modüler yapıda merkezi olarak klasörlenmesi ve arşivlenmesi.
+* 🌐 **Web Dashboard (Yeni!):** Modern, koyu temalı ve Glassmorphism tasarımlı, FastAPI ve WebSocket destekli gelişmiş kontrol paneli.
+* 📦 **PCAP Analizi:** Ağ trafik dosyalarını (.pcap, .pcapng) okuma, ayrıştırma ve istatistiksel analiz (Artık Arayüzden Yüklenebilir).
+* 📡 **Canlı Trafik İzleme (Sniffing):** Ağ arayüzleri üzerinden gerçek zamanlı IPv4 ve IPv6 paket yakalama ve analiz etme.
+* 🛡️ **Nmap Entegrasyonu:** Hedef sistemler üzerinde detaylı port tarama, servis tespiti ve zafiyet analizi (Web Arayüzü Tetiklemeli).
+* 📊 **Protokol Analizi:** HTTP/HTTPS isteklerinin tespiti, DNS anormallikleri (örn. DNS tunneling) ve GeoIP destekli IP istatistikleri.
+* 🧠 **Anormallik ve Zafiyet Tespiti:** SYN Flood, Port Tarama, Veri Sızdırma (Exfiltration) ve şüpheli payload tespiti.
+* 📂 **Otomatik Raporlama:** JSON, HTML ve TXT formatında modüler merkezi arşivleme.
 
 ---
 
