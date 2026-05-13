@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const scanLoader = document.getElementById('scan-loader');
     const clearBtn = document.getElementById('clear-btn');
     const btnScan = document.getElementById('btn-scan');
-
+    const pcapForm = document.getElementById('pcap-form');
+    const btnPcap = document.getElementById('btn-pcap');
+    const pcapFile = document.getElementById('pcap-file');
     // Terminal log yazici
     function logToTerminal(message, type = 'info') {
         const time = new Date().toLocaleTimeString();
@@ -68,6 +70,66 @@ document.addEventListener('DOMContentLoaded', () => {
             btnScan.innerHTML = '<i class="fa-solid fa-play"></i> Başlat';
         }
     });
+
+    // PCAP Dosyasi Yukleme
+    pcapForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = pcapFile.files[0];
+        if(!file) return;
+
+        logToTerminal(`📂 '${file.name}' dosyası yükleniyor ve analiz ediliyor... Lütfen bekleyin.`, 'info');
+        scanLoader.style.display = 'block';
+        btnPcap.disabled = true;
+        btnPcap.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> İşleniyor';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await fetch('/api/pcap_upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if(data.status === 'success') {
+                logToTerminal(`✅ PCAP analizi tamamlandı!`, 'success');
+                // Gelen sonuclari ekrana dök
+                const stats = data.data;
+                const resultText = `
+[PROTOKOL DAĞILIMI]
+DNS: ${stats.protokol_dagilimi.DNS || 0} paket
+HTTP: ${stats.protokol_dagilimi.HTTP || 0} paket
+HTTPS: ${stats.protokol_dagilimi.HTTPS || 0} paket
+
+[TOP TALKERS]
+${stats.top_talkers.map(ip => `- ${ip[0]}: ${ip[1]} paket`).join('\n')}
+
+[TESPİT EDİLEN ANOMALİLER]
+${stats.anomaliler.length > 0 ? stats.anomaliler.map(a => `! ${a}`).join('\n') : 'Anomali tespit edilmedi.'}
+                `;
+                terminalOutput.innerHTML += `<pre style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px;">${resultText}</pre>\n`;
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                
+                // Stat widget guncelle
+                document.querySelector('.warning .stat-value').innerText = stats.anomaliler.filter(a => a.includes('Port Tarama')).length;
+                document.querySelector('.danger .stat-value').innerText = stats.anomaliler.filter(a => a.includes('DNS Tunneling')).length;
+                
+            } else {
+                logToTerminal(`❌ Analiz hatası: ${data.message}`, 'error');
+            }
+
+        } catch (error) {
+            logToTerminal(`❌ Bağlantı hatası: ${error.message}`, 'error');
+        } finally {
+            scanLoader.style.display = 'none';
+            btnPcap.disabled = false;
+            btnPcap.innerHTML = '<i class="fa-solid fa-upload"></i> Yükle ve Analiz Et';
+            pcapForm.reset();
+        }
+    });
+
 
     // WebSocket Baglantisi (Canli metrikler)
     function connectWebSocket() {
