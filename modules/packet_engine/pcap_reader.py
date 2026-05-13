@@ -5,6 +5,7 @@ from scapy.all import (
     PcapReader as ScapyPcapReader,
     Scapy_Exception,
     IP,
+    IPv6,
     TCP,
     UDP,
     ICMP,
@@ -97,11 +98,15 @@ class PcapReader:
         """
         Tek bir paketten kaynak/hedef, port ve Payload (DPI) bilgilerini çıkarır.
         """
-        if IP not in pkt:
+        if IP in pkt:
+            ip_src = pkt[IP].src
+            ip_dst = pkt[IP].dst
+        elif IPv6 in pkt:
+            ip_src = pkt[IPv6].src
+            ip_dst = pkt[IPv6].dst
+        else:
             return None
 
-        ip_src = pkt[IP].src
-        ip_dst = pkt[IP].dst
         length = len(pkt)
 
         protocol = "OTHER"

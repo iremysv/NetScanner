@@ -4,7 +4,7 @@ from datetime import datetime
 from core import config as Ayarlar
 
 
-def rapor_yaz(hedef: str, sonuc_metni: str) -> None:
+def rapor_yaz(hedef: str, sonuc_metni: str) -> str:
     tarih = datetime.now().strftime("%Y-%m-%d_%H-%M")
 
     # Klasör kontrolü
@@ -21,3 +21,4 @@ def rapor_yaz(hedef: str, sonuc_metni: str) -> None:
         f.write(sonuc_metni)
 
     print(f"\n[+] Rapor başarıyla oluşturuldu: {dosya_adi}")
+    return dosya_adi

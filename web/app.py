@@ -68,10 +68,10 @@ async def run_scan(req: ScanRequest):
     await manager.broadcast({"type": "info", "message": f"{hedef} için tarama başlatılıyor..."})
     
     # Nmap calistirma
-    sonuc_text = nmap_calistir(komut_listesi, hedef, f"web_scan_{hedef}")
+    sonuc_text, rapor_yolu = nmap_calistir(komut_listesi, hedef, f"web_scan_{hedef}")
     
     if sonuc_text:
-        return {"status": "success", "result": sonuc_text, "report_path": f"taramalar/rapor_web_scan_{hedef}.txt"}
+        return {"status": "success", "result": sonuc_text, "report_path": rapor_yolu}
     return {"status": "error", "message": "Tarama başarısız oldu."}
 
 # Canlı Sistem Metrikleri & Log Akışı (WebSocket)

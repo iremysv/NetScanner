@@ -1,6 +1,6 @@
 import logging
 import threading
-from scapy.all import sniff, IP, TCP, UDP, ICMP, DNS, DNSQR, Raw
+from scapy.all import sniff, IP, IPv6, TCP, UDP, ICMP, DNS, DNSQR, Raw
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 logging.basicConfig(
@@ -26,9 +26,9 @@ class LiveSniffer:
         Scapy tarafından yakalanan her bir paket için çağrılan callback fonksiyonu.
         Paketi ayrıştırır ve self.parsed_packets listesine ekler.
         """
-        if IP in pkt:
-            ip_src = pkt[IP].src
-            ip_dst = pkt[IP].dst
+        if IP in pkt or IPv6 in pkt:
+            ip_src = pkt[IP].src if IP in pkt else pkt[IPv6].src
+            ip_dst = pkt[IP].dst if IP in pkt else pkt[IPv6].dst
             length = len(pkt)
 
             protocol = "OTHER"
