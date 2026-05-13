@@ -99,22 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stats = data.data;
                 const resultText = `
 [PROTOKOL DAĞILIMI]
-DNS: ${stats.protokol_dagilimi.DNS || 0} paket
-HTTP: ${stats.protokol_dagilimi.HTTP || 0} paket
-HTTPS: ${stats.protokol_dagilimi.HTTPS || 0} paket
+DNS: ${stats.protocol_distribution.DNS || 0} paket
+HTTP: ${stats.protocol_distribution.HTTP || 0} paket
+HTTPS: ${stats.protocol_distribution.HTTPS || 0} paket
 
 [TOP TALKERS]
-${stats.top_talkers.map(ip => `- ${ip[0]}: ${ip[1]} paket`).join('\n')}
+${stats.top_talkers.map(t => `- ${t.ip}: ${t.count} paket [Konum: ${t.location}]`).join('\n')}
 
 [TESPİT EDİLEN ANOMALİLER]
-${stats.anomaliler.length > 0 ? stats.anomaliler.map(a => `! ${a}`).join('\n') : 'Anomali tespit edilmedi.'}
+${stats.anomalies.length > 0 ? stats.anomalies.map(a => `! [${a.type}] IP: ${a.source_ip} - ${a.details}`).join('\n') : 'Anomali tespit edilmedi.'}
                 `;
-                terminalOutput.innerHTML += `<pre style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px;">${resultText}</pre>\n`;
+                terminalOutput.innerHTML += `<pre style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; white-space: pre-wrap;">${resultText}</pre>\n`;
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
                 
                 // Stat widget guncelle
-                document.querySelector('.warning .stat-value').innerText = stats.anomaliler.filter(a => a.includes('Port Tarama')).length;
-                document.querySelector('.danger .stat-value').innerText = stats.anomaliler.filter(a => a.includes('DNS Tunneling')).length;
+                document.querySelector('.warning .stat-value').innerText = stats.anomalies.filter(a => a.type === 'PORT_SCAN').length;
+                document.querySelector('.danger .stat-value').innerText = stats.anomalies.filter(a => a.type.includes('DNS_TUNNELING')).length;
                 
             } else {
                 logToTerminal(`❌ Analiz hatası: ${data.message}`, 'error');
