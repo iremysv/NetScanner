@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import json
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+import os
+import tempfile
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,6 +12,7 @@ from pydantic import BaseModel
 # Mevcut modüller
 from core import config as Ayarlar
 from modules.nmap_integration.scanner import nmap_calistir
+from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
 from reports.traffic_reporter import trafik_raporu_olustur
 
