@@ -62,7 +62,7 @@ async def run_scan(req: ScanRequest):
     # Arka planda asenkron olarak komut çalıştırmak için asyncio kullanılır
     # Hızlıca nmap komutlarını ayarlayalım
     hedef = req.target
-    komut_listesi = ["nmap", "-T4", "-F", hedef] if req.scan_type == "quick" else ["nmap", "-sV", "-O", hedef]
+    komut_listesi = ["nmap", "-T4", "-F", hedef] if req.scan_type == "quick" else ["nmap", "-T4", "-sV", hedef]
     
     # WebSocket ile anlık "Başladı" mesajı atabiliriz
     await manager.broadcast({"type": "info", "message": f"{hedef} için tarama başlatılıyor..."})
@@ -107,6 +107,9 @@ async def upload_pcap(file: UploadFile = File(...)):
             paketler = reader.parse_packets()
             analyzer_instance = TrafficAnalyzer(paketler)
             sonuclar = analyzer_instance.analyze()
+            
+            if not sonuclar:
+                return {"status": "error", "message": "PCAP dosyası analiz edilemedi veya desteklenen paket bulunamadı."}
             
             # Rapor oluştur
             trafik_raporu_olustur("web_pcap", sonuclar)
