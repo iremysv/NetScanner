@@ -34,3 +34,6 @@ htmlcov/
 *.log
 data/*.pcap
 !data/sample.pcap
+# Demo görsellerini git'e dahil et
+!Demo/*.png
+!Demo/*.webp

@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
 
 ### 🎬 Sistem Demosu
-<img src="./Demo/netscanner_demo.png" alt="NetScanner Dashboard Demo" width="800" />
+![NetScanner Dashboard Demo](Demo/netscanner_demo.png)
 
 **Üniversite Adı:** İstinye Üniversitesi  
 **Danışman/Eğitmen:** Keyvan Arasteh Abbasabad  
