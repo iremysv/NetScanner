@@ -14,6 +14,7 @@ from core import config as Ayarlar
 from modules.nmap_integration.scanner import nmap_calistir
 from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
+from modules.packet_engine.live_sniffer import LiveSniffer
 from reports.traffic_reporter import trafik_raporu_olustur
 
 app = FastAPI(title="NetScanner Web Dashboard")
@@ -22,8 +23,9 @@ app = FastAPI(title="NetScanner Web Dashboard")
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
 templates = Jinja2Templates(directory="web/templates")
 
-# Analiz Motoru
+# Analiz Motoru ve Sniffer
 analyzer = TrafficAnalyzer([])
+live_sniffer = LiveSniffer()
 
 # WebSocket bağlantılarını yönetecek sınıf
 class ConnectionManager:
@@ -79,13 +81,63 @@ async def run_scan(req: ScanRequest):
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
+        last_packet_count = 0
         while True:
-            # Burası canlı pcap okuma veya logları tarayıcıya basmak için eklenebilir.
-            # Şimdilik heartbeat olarak bırakalım
             await asyncio.sleep(2)
-            await websocket.send_json({"type": "ping", "message": "Alive"})
+            if live_sniffer._sniff_thread and live_sniffer._sniff_thread.is_alive():
+                current_packets = live_sniffer.get_parsed_packets()
+                current_count = len(current_packets)
+                if current_count > last_packet_count:
+                    new_packets = current_packets[last_packet_count:current_count]
+                    last_packet_count = current_count
+                    
+                    # Son 5 paketin özetini arayüze canlı yansıtmak için
+                    latest_previews = [
+                        f"[{p['protocol']}] {p['src_ip']} -> {p['dst_ip']} ({p['length']} byte)"
+                        for p in new_packets[-5:]
+                    ]
+                    
+                    await websocket.send_json({
+                        "type": "live_traffic", 
+                        "count": current_count,
+                        "latest": latest_previews
+                    })
+                else:
+                    await websocket.send_json({"type": "live_traffic", "count": current_count, "latest": []})
+            else:
+                last_packet_count = 0
+                await websocket.send_json({"type": "ping", "message": "Alive"})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+# Canlı Dinleme (Live Sniffing) Başlatma API
+@app.post("/api/sniff/start")
+async def start_sniffing():
+    if live_sniffer._sniff_thread and live_sniffer._sniff_thread.is_alive():
+        return {"status": "error", "message": "Canlı izleme zaten çalışıyor."}
+    
+    live_sniffer.start_sniffing()
+    await manager.broadcast({"type": "info", "message": "Canlı paket dinlemesi arka planda başlatıldı."})
+    return {"status": "success", "message": "Canlı izleme başlatıldı."}
+
+# Canlı Dinleme (Live Sniffing) Durdurma ve Analiz API
+@app.post("/api/sniff/stop")
+async def stop_sniffing():
+    if not live_sniffer._sniff_thread or not live_sniffer._sniff_thread.is_alive():
+        return {"status": "error", "message": "Çalışan bir canlı izleme işlemi bulunamadı."}
+        
+    live_sniffer.stop_sniffing()
+    paketler = live_sniffer.get_parsed_packets()
+    
+    if not paketler:
+        return {"status": "success", "message": "Dinleme durduruldu. Herhangi bir ağ paketi yakalanamadı.", "data": {}}
+        
+    analyzer_instance = TrafficAnalyzer(paketler)
+    sonuclar = analyzer_instance.analyze()
+    trafik_raporu_olustur("web_live_sniff", sonuclar)
+    
+    await manager.broadcast({"type": "success", "message": f"Canlı izleme durduruldu. Toplam {len(paketler)} paket yakalandı ve analiz edildi."})
+    return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
 
 # PCAP Dosya Yükleme ve Analiz API
 @app.post("/api/pcap_upload")
