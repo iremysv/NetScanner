@@ -212,7 +212,7 @@ class TestAnomalyDetection:
             _make_packet(
                 "10.0.1.1",
                 protocol="HTTP",
-                payload_preview="GET /?id=1' OR 1=1-- HTTP/1.1",
+                payload_preview="GET /?sql=1' OR 1=1-- HTTP/1.1",
             )
         ]
         result = TrafficAnalyzer(packets).analyze()
