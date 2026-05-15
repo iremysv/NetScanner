@@ -282,7 +282,8 @@ input[type="text"]:focus {
 }
 
 .warning .stat-value { color: var(--warning-color); }
-.danger .stat-value { color: var(--danger-color); }
+.danger  .stat-value { color: var(--danger-color); }
+.info    .stat-value { color: var(--primary-color); }
 
 .stat-label {
     font-size: 0.8rem;
@@ -347,4 +348,36 @@ input[type="text"]:focus {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION PAGE GEÇİŞLERİ
+═══════════════════════════════════════════════ */
+.section-page {
+    display: none;
+    animation: fadeInUp 0.3s ease;
+    flex: 1;
+}
+
+.section-page.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Generic terminal pre styling (live, nmap, pcap outputs) */
+#live-output,
+#nmap-output,
+#pcap-output {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    padding: 20px;
+    color: var(--success-color);
+    height: 350px;
+    overflow-y: auto;
+    white-space: pre-wrap;
 }

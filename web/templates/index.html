@@ -20,112 +20,200 @@
             </div>
             
             <ul class="nav-menu">
-                <li class="active"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
-                <li><i class="fa-solid fa-satellite-dish"></i> Canlı İzleme</li>
-                <li><i class="fa-solid fa-network-wired"></i> Nmap Taraması</li>
-                <li><i class="fa-solid fa-file-shield"></i> PCAP Analizi</li>
-                <li><i class="fa-solid fa-gear"></i> Ayarlar</li>
+                <li class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</li>
+                <li data-section="live"><i class="fa-solid fa-satellite-dish"></i> Canlı İzleme</li>
+                <li data-section="nmap"><i class="fa-solid fa-network-wired"></i> Nmap Taraması</li>
+                <li data-section="pcap"><i class="fa-solid fa-file-shield"></i> PCAP Analizi</li>
+                <li data-section="settings"><i class="fa-solid fa-gear"></i> Ayarlar</li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-header">
-                <h1>Siber Güvenlik Komuta Merkezi</h1>
+                <h1 id="page-title">Siber Güvenlik Komuta Merkezi</h1>
                 <div class="status-indicator">
                     <span class="pulse"></span>
                     <span>Sistem Aktif</span>
                 </div>
             </header>
 
-            <div class="dashboard-grid">
-                
-                <!-- Quick Scan Widget -->
-                <div class="widget glass-panel span-2">
-                    <div class="widget-header">
-                        <h3><i class="fa-solid fa-bolt"></i> Hedef Tarama (Nmap)</h3>
-                    </div>
-                    <div class="widget-body">
-                        <form id="scan-form">
-                            <div class="input-group">
-                                <input type="text" id="target-ip" placeholder="Hedef IP veya Domain girin (Örn: scanme.nmap.org)" required>
-                                <button type="submit" class="btn-primary" id="btn-scan">
-                                    <i class="fa-solid fa-play"></i> Başlat
-                                </button>
-                            </div>
-                            <div class="scan-options">
-                                <label><input type="radio" name="scan_type" value="quick" checked> Hızlı Tarama</label>
-                                <label><input type="radio" name="scan_type" value="deep"> Derin Tarama (-sV -O)</label>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <!-- ═══════════════ DASHBOARD ═══════════════ -->
+            <div id="section-dashboard" class="section-page active">
+                <div class="dashboard-grid">
 
-                <!-- Stats Widget -->
-                <div class="widget glass-panel">
-                    <div class="widget-header">
-                        <h3><i class="fa-solid fa-chart-pie"></i> Anomali İstatistikleri</h3>
-                    </div>
-                    <div class="widget-body stat-body">
-                        <div class="stat-card warning">
-                            <span class="stat-value">0</span>
-                            <span class="stat-label">Port Tarama</span>
+                    <!-- Stats Widget -->
+                    <div class="widget glass-panel span-3">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Anomali İstatistikleri</h3>
                         </div>
-                        <div class="stat-card danger">
-                            <span class="stat-value">0</span>
-                            <span class="stat-label">DNS Tunneling</span>
+                        <div class="widget-body stat-body">
+                            <div class="stat-card warning">
+                                <span class="stat-value" id="stat-port-scan">0</span>
+                                <span class="stat-label">Port Tarama</span>
+                            </div>
+                            <div class="stat-card danger">
+                                <span class="stat-value" id="stat-dns-tunnel">0</span>
+                                <span class="stat-label">DNS Tunneling</span>
+                            </div>
+                            <div class="stat-card info">
+                                <span class="stat-value" id="stat-total-packets">0</span>
+                                <span class="stat-label">Toplam Paket</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Live Sniffer Widget -->
-                <div class="widget glass-panel span-3">
-                    <div class="widget-header">
-                        <h3><i class="fa-solid fa-satellite-dish"></i> Canlı Ağ İzleme (Live Sniffer)</h3>
-                        <span id="live-status-badge" class="badge" style="background-color: var(--text-muted); margin-left: auto;">Kapalı</span>
-                    </div>
-                    <div class="widget-body">
-                        <div class="input-group" style="justify-content: center; gap: 20px;">
-                            <button class="btn-primary" id="btn-start-sniff" style="background-color: var(--primary-color); color: #000;">
-                                <i class="fa-solid fa-play"></i> Dinlemeyi Başlat
-                            </button>
-                            <button class="btn-primary" id="btn-stop-sniff" style="background-color: var(--danger-color); display: none;">
-                                <i class="fa-solid fa-stop"></i> Dinlemeyi Durdur & Analiz Et
-                            </button>
+                    <!-- Terminal Output Widget -->
+                    <div class="widget glass-panel span-3 terminal-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-terminal"></i> Sistem Logu</h3>
+                            <button id="clear-btn" class="btn-icon"><i class="fa-solid fa-eraser"></i></button>
+                        </div>
+                        <div class="widget-body terminal-body">
+                            <pre id="terminal-output">NetScanner başlatıldı. Sistem hazır. Sol menüden bir işlem seçin...</pre>
+                            <div class="loader-line" id="scan-loader" style="display: none;"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- PCAP Upload Widget -->
-                <div class="widget glass-panel span-3">
-                    <div class="widget-header">
-                        <h3><i class="fa-solid fa-file-shield"></i> PCAP Ağ Trafiği Analizi</h3>
-                    </div>
-                    <div class="widget-body">
-                        <form id="pcap-form" enctype="multipart/form-data">
-                            <div class="input-group">
-                                <input type="file" id="pcap-file" name="file" accept=".pcap,.pcapng" required style="padding: 9px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); flex: 1;">
-                                <button type="submit" class="btn-primary" id="btn-pcap">
-                                    <i class="fa-solid fa-upload"></i> Yükle ve Analiz Et
-                                </button>
-                            </div>
-                        </form>
-                    </div>
                 </div>
-
-                <!-- Terminal Output Widget -->
-                <div class="widget glass-panel span-3 terminal-widget">
-                    <div class="widget-header">
-                        <h3><i class="fa-solid fa-terminal"></i> Analiz Çıktısı</h3>
-                        <button id="clear-btn" class="btn-icon"><i class="fa-solid fa-eraser"></i></button>
-                    </div>
-                    <div class="widget-body terminal-body">
-                        <pre id="terminal-output">NetScanner başlatıldı. Sistem hazır. Hedef belirleyerek taramayı başlatın...</pre>
-                        <div class="loader-line" id="scan-loader" style="display: none;"></div>
-                    </div>
-                </div>
-
             </div>
+
+            <!-- ═══════════════ CANLI İZLEME ═══════════════ -->
+            <div id="section-live" class="section-page">
+                <div class="dashboard-grid">
+                    <div class="widget glass-panel span-3">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-satellite-dish"></i> Canlı Ağ İzleme (Live Sniffer)</h3>
+                            <span id="live-status-badge" class="badge" style="background-color: var(--text-muted); margin-left: auto;">Kapalı</span>
+                        </div>
+                        <div class="widget-body">
+                            <div class="input-group" style="justify-content: center; gap: 20px;">
+                                <button class="btn-primary" id="btn-start-sniff" style="background-color: var(--primary-color); color: #000;">
+                                    <i class="fa-solid fa-play"></i> Dinlemeyi Başlat
+                                </button>
+                                <button class="btn-primary" id="btn-stop-sniff" style="background-color: var(--danger-color); display: none;">
+                                    <i class="fa-solid fa-stop"></i> Dinlemeyi Durdur & Analiz Et
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Terminal -->
+                    <div class="widget glass-panel span-3 terminal-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-terminal"></i> Canlı Paket Akışı</h3>
+                        </div>
+                        <div class="widget-body terminal-body">
+                            <pre id="live-output">Canlı dinleme başlatılmadı. Yukarıdaki butona tıklayın...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ NMAP TARAMASI ═══════════════ -->
+            <div id="section-nmap" class="section-page">
+                <div class="dashboard-grid">
+                    <div class="widget glass-panel span-3">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-bolt"></i> Hedef Tarama (Nmap)</h3>
+                        </div>
+                        <div class="widget-body">
+                            <form id="scan-form">
+                                <div class="input-group">
+                                    <input type="text" id="target-ip" placeholder="Hedef IP veya Domain girin (Örn: scanme.nmap.org)" required>
+                                    <button type="submit" class="btn-primary" id="btn-scan">
+                                        <i class="fa-solid fa-play"></i> Başlat
+                                    </button>
+                                </div>
+                                <div class="scan-options">
+                                    <label><input type="radio" name="scan_type" value="quick" checked> Hızlı Tarama</label>
+                                    <label><input type="radio" name="scan_type" value="detailed"> Derin Tarama (-sV -O)</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Nmap Terminal -->
+                    <div class="widget glass-panel span-3 terminal-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-terminal"></i> Tarama Çıktısı</h3>
+                            <button id="clear-nmap-btn" class="btn-icon"><i class="fa-solid fa-eraser"></i></button>
+                        </div>
+                        <div class="widget-body terminal-body">
+                            <pre id="nmap-output">Nmap taraması bekleniyor...</pre>
+                            <div class="loader-line" id="nmap-loader" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ PCAP ANALİZİ ═══════════════ -->
+            <div id="section-pcap" class="section-page">
+                <div class="dashboard-grid">
+                    <div class="widget glass-panel span-3">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-file-shield"></i> PCAP Ağ Trafiği Analizi</h3>
+                        </div>
+                        <div class="widget-body">
+                            <form id="pcap-form" enctype="multipart/form-data">
+                                <div class="input-group">
+                                    <input type="file" id="pcap-file" name="file" accept=".pcap,.pcapng" required style="padding: 9px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-color); flex: 1;">
+                                    <button type="submit" class="btn-primary" id="btn-pcap">
+                                        <i class="fa-solid fa-upload"></i> Yükle ve Analiz Et
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- PCAP Terminal -->
+                    <div class="widget glass-panel span-3 terminal-widget">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-terminal"></i> Analiz Çıktısı</h3>
+                            <button id="clear-pcap-btn" class="btn-icon"><i class="fa-solid fa-eraser"></i></button>
+                        </div>
+                        <div class="widget-body terminal-body">
+                            <pre id="pcap-output">PCAP dosyası bekleniyor...</pre>
+                            <div class="loader-line" id="pcap-loader" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ AYARLAR ═══════════════ -->
+            <div id="section-settings" class="section-page">
+                <div class="dashboard-grid">
+                    <div class="widget glass-panel span-3">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-gear"></i> Ayarlar</h3>
+                        </div>
+                        <div class="widget-body">
+                            <div style="color: var(--text-muted); padding: 20px 0;">
+                                <p style="margin-bottom: 16px;"><i class="fa-solid fa-info-circle"></i> &nbsp;Uygulama Bilgileri</p>
+                                <table style="width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:0.9em;">
+                                    <tr style="border-bottom:1px solid var(--border-color);">
+                                        <td style="padding:10px; color:var(--text-color);">Versiyon</td>
+                                        <td style="padding:10px; color:var(--primary-color);">NetScanner v1.0.0</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border-color);">
+                                        <td style="padding:10px; color:var(--text-color);">Backend</td>
+                                        <td style="padding:10px; color:var(--primary-color);">FastAPI + Uvicorn</td>
+                                    </tr>
+                                    <tr style="border-bottom:1px solid var(--border-color);">
+                                        <td style="padding:10px; color:var(--text-color);">Paket Motoru</td>
+                                        <td style="padding:10px; color:var(--primary-color);">Scapy 2.5.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:10px; color:var(--text-color);">Nmap</td>
+                                        <td style="padding:10px; color:var(--primary-color);">python-nmap 0.7.1</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
