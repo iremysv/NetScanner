@@ -2,12 +2,13 @@
 import asyncio
 import json
 import os
+import re
 import tempfile
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, File, UploadFile
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 # Mevcut modüller
 from core import config as Ayarlar
@@ -40,11 +41,14 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def broadcast(self, message: dict):
+        dead: list[WebSocket] = []
         for connection in self.active_connections:
             try:
                 await connection.send_json(message)
-            except:
-                pass
+            except Exception:
+                dead.append(connection)
+        for conn in dead:
+            self.active_connections.remove(conn)
 
 manager = ConnectionManager()
 
@@ -54,9 +58,42 @@ async def get_dashboard(request: Request):
     return templates.TemplateResponse(request=request, name="index.html", context={"request": request})
 
 # Tarama İstek Modeli
+_ALLOWED_SCAN_TYPES = {"quick", "detailed"}
+_TARGET_PATTERN = re.compile(
+    r"^("
+    r"(\d{1,3}\.){3}\d{1,3}"           # IPv4: 192.168.1.1
+    r"|(\d{1,3}\.){3}\d{1,3}/\d{1,2}"  # CIDR: 192.168.1.0/24
+    r"|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}"  # Alan adı: example.com
+    r")$"
+)
+
+
 class ScanRequest(BaseModel):
     target: str
     scan_type: str = "quick"
+
+    @field_validator("target")
+    @classmethod
+    def validate_target(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Hedef IP veya alan adı boş olamaz.")
+        if not _TARGET_PATTERN.match(v):
+            raise ValueError(
+                f"Geçersiz hedef formatı: '{v}'. "
+                "IPv4, CIDR veya alan adı giriniz."
+            )
+        return v
+
+    @field_validator("scan_type")
+    @classmethod
+    def validate_scan_type(cls, v: str) -> str:
+        if v not in _ALLOWED_SCAN_TYPES:
+            raise ValueError(
+                f"Geçersiz tarama tipi: '{v}'. "
+                f"İzin verilenler: {_ALLOWED_SCAN_TYPES}"
+            )
+        return v
 
 # Nmap Tarama API
 @app.post("/api/scan")
@@ -142,38 +179,52 @@ async def stop_sniffing():
 # PCAP Dosya Yükleme ve Analiz API
 @app.post("/api/pcap_upload")
 async def upload_pcap(file: UploadFile = File(...)):
-    await manager.broadcast({"type": "info", "message": f"'{file.filename}' dosyası sisteme yükleniyor ve analiz ediliyor..."})
-    
-    # Geçici dosya oluştur ve gelen içeriği yaz
-    temp_dir = tempfile.gettempdir()
-    temp_pcap_path = os.path.join(temp_dir, file.filename)
-    
+    # Dosya uzantısı kontrolü
+    filename = file.filename or ""
+    if not filename.lower().endswith((".pcap", ".pcapng")):
+        raise HTTPException(
+            status_code=400,
+            detail="Sadece .pcap veya .pcapng uzantılı dosyalar kabul edilmektedir.",
+        )
+
+    await manager.broadcast(
+        {"type": "info", "message": f"'{filename}' dosyası sisteme yükleniyor ve analiz ediliyor..."}
+    )
+
+    content = await file.read()
+
+    # Güvenli geçici dosya — isim enjeksiyonuna karşı NamedTemporaryFile kullan
     try:
-        with open(temp_pcap_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
-            
-        # PcapReader ile oku
+        with tempfile.NamedTemporaryFile(
+            suffix=".pcap", delete=False
+        ) as tmp:
+            tmp.write(content)
+            temp_pcap_path = tmp.name
+
+        # PcapReader ile oku ve analiz et
         reader = PcapReader(temp_pcap_path)
         if reader.read_pcap():
             paketler = reader.parse_packets()
             analyzer_instance = TrafficAnalyzer(paketler)
             sonuclar = analyzer_instance.analyze()
-            
+
             if not sonuclar:
-                return {"status": "error", "message": "PCAP dosyası analiz edilemedi veya desteklenen paket bulunamadı."}
-            
-            # Rapor oluştur
+                return {
+                    "status": "error",
+                    "message": "PCAP dosyası analiz edilemedi veya desteklenen paket bulunamadı.",
+                }
+
             trafik_raporu_olustur("web_pcap", sonuclar)
-            
-            await manager.broadcast({"type": "success", "message": f"'{file.filename}' analizi tamamlandı."})
+            await manager.broadcast(
+                {"type": "success", "message": f"'{filename}' analizi tamamlandı."}
+            )
             return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
         else:
             return {"status": "error", "message": "PCAP dosyası okunamadı veya geçersiz."}
-            
+
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
-        if os.path.exists(temp_pcap_path):
+        if 'temp_pcap_path' in locals() and os.path.exists(temp_pcap_path):
             os.remove(temp_pcap_path)
 
