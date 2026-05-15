@@ -11,7 +11,39 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "scapy",
-    "python-nmap",
-    "colorama"
+    # --- Paket Analizi ---
+    "scapy>=2.5.0",
+    "tqdm>=4.67",
+    "requests>=2.34",
+    # --- Web Sunucusu (FastAPI + ASGI) ---
+    "fastapi>=0.136",
+    "uvicorn>=0.46",
+    "starlette>=1.0",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.28",
+    "websockets>=16.0",
+    # --- Nmap Entegrasyonu ---
+    "python-nmap>=0.7",
+    # --- Veri Doğrulama ---
+    "pydantic>=2.13",
+    # --- Yardımcı ---
+    "colorama>=0.4",
+    "rich>=15.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    # --- Test ---
+    "pytest>=9.0",
+    # --- Kod Kalitesi ---
+    "mypy>=2.1",
+    "black>=26.0",
+    "flake8>=7.0",
+    "bandit>=1.9",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["Tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
