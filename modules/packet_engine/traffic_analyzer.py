@@ -190,7 +190,9 @@ class TrafficAnalyzer:
                     {
                         "type": "SYN_FLOOD_DDOS",
                         "source_ip": ip,
-                        "details": f"{syn_count} adet sadece SYN paketi (ACK beklenmeyen) gönderildi.",
+                        "details": (
+                            f"{syn_count} adet sadece SYN paketi (ACK beklenmeyen) gönderildi."
+                        ),
                     }
                 )
 

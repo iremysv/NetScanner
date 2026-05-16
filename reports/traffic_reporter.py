@@ -48,7 +48,8 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
         else:
             for anomali in anomaliler:
                 f.write(
-                    f"  ! DİKKAT [{anomali.get('type')}]: IP: {anomali.get('source_ip')} -> {anomali.get('details')}\n"
+                    f"  ! DİKKAT [{anomali.get('type')}]: "
+                    f"IP: {anomali.get('source_ip')} -> {anomali.get('details')}\n"
                 )
         f.write("\n" + "-" * 40 + "\n")
 
@@ -58,7 +59,10 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
         f.write(html_content)
 
     print(
-        f"\n[+] Trafik analiz raporu oluşturuldu:\n    TXT: {dosya_adi_txt}\n    JSON: {dosya_adi_json}\n    HTML: {dosya_adi_html}"
+        f"\n[+] Trafik analiz raporu oluşturuldu:"
+        f"\n    TXT:  {dosya_adi_txt}"
+        f"\n    JSON: {dosya_adi_json}"
+        f"\n    HTML: {dosya_adi_html}"
     )
 
 
@@ -67,24 +71,43 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
 
     # CSS Stilleri
     css = """
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6; color: #333; margin: 0; padding: 20px;
+    }
     h1, h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
-    .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .summary-box { background: #e8f4f8; padding: 15px; border-left: 5px solid #3498db; margin-bottom: 20px; }
+    .container {
+        max-width: 900px; margin: auto; background: #fff;
+        padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .summary-box {
+        background: #e8f4f8; padding: 15px;
+        border-left: 5px solid #3498db; margin-bottom: 20px;
+    }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
     th { background-color: #3498db; color: white; }
     tr:hover { background-color: #f1f1f1; }
     .alert { background: #ffeded; border-left: 5px solid #e74c3c; padding: 15px; margin-bottom: 10px; }
     .alert-title { color: #c0392b; font-weight: bold; }
-    .badge { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; color: white; background: #34495e; }
+    .badge {
+        display: inline-block; padding: 5px 10px; border-radius: 15px;
+        font-size: 12px; font-weight: bold; color: white; background: #34495e;
+    }
     """
 
     # Top Talkers Tablosu
     top_talkers = sonuclar.get("top_talkers", [])
-    talkers_html = "<table><tr><th>Sıra</th><th>IP Adresi</th><th>Paket Sayısı</th><th>Coğrafi Konum (OSINT)</th></tr>"
+    talkers_html = (
+        "<table><tr>"
+        "<th>Sıra</th><th>IP Adresi</th><th>Paket Sayısı</th><th>Coğrafi Konum (OSINT)</th>"
+        "</tr>"
+    )
     for i, t in enumerate(top_talkers):
-        talkers_html += f"<tr><td>{i+1}</td><td>{t['ip']}</td><td>{t['count']}</td><td>{t['location']}</td></tr>"
+        talkers_html += (
+            f"<tr><td>{i+1}</td><td>{t['ip']}</td>"
+            f"<td>{t['count']}</td><td>{t['location']}</td></tr>"
+        )
     talkers_html += "</table>"
 
     # Protokol Dağılımı Tablosu
@@ -98,10 +121,18 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
     anomalies = sonuclar.get("anomalies", [])
     anomalies_html = ""
     if not anomalies:
-        anomalies_html = "<p style='color: green; font-weight: bold;'>Ağda herhangi bir anomali tespit edilmedi.</p>"
+        anomalies_html = (
+            "<p style='color: green; font-weight: bold;'>"
+            "Ağda herhangi bir anomali tespit edilmedi.</p>"
+        )
     else:
         for a in anomalies:
-            anomalies_html += f"<div class='alert'><span class='alert-title'>[{a.get('type')}]</span> Şüpheli IP: <strong>{a.get('source_ip')}</strong><br>Detay: {a.get('details')}</div>"
+            anomalies_html += (
+                f"<div class='alert'>"
+                f"<span class='alert-title'>[{a.get('type')}]</span> "
+                f"Şüpheli IP: <strong>{a.get('source_ip')}</strong>"
+                f"<br>Detay: {a.get('details')}</div>"
+            )
 
     html_template = f"""
     <!DOCTYPE html>
@@ -127,8 +158,9 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
 
             <h2>📊 Protokol Dağılımı</h2>
             {proto_html}
-            
-            <p style="text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 40px;">Bu rapor NetScanner Packet Engine tarafından otomatik üretilmiştir.</p>
+            <p style="text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 40px;">
+                Bu rapor NetScanner Packet Engine tarafından otomatik üretilmiştir.
+            </p>
         </div>
     </body>
     </html>

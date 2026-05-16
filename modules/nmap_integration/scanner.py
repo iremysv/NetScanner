@@ -5,7 +5,9 @@ from modules.nmap_integration.analyzer import analiz_et
 from reports.reporter import rapor_yaz
 
 
-def nmap_calistir(komut_listesi: list[str], hedef: str, rapor_adi: str) -> tuple[str, str] | tuple[None, None]:
+def nmap_calistir(
+    komut_listesi: list[str], hedef: str, rapor_adi: str
+) -> tuple[str, str] | tuple[None, None]:
     try:
         print(f"\n[+] İşlem başlatıldı: {' '.join(komut_listesi)}")
         sonuc = subprocess.run(
@@ -20,7 +22,8 @@ def nmap_calistir(komut_listesi: list[str], hedef: str, rapor_adi: str) -> tuple
         acik_portlar = re.findall(r"(\d+)/tcp\s+open", sonuc.stdout)
         if acik_portlar:
             print(
-                f"[*] {len(acik_portlar)} adet açık port tespit edildi, analiz motoruna iletiliyor...\n"
+                f"[*] {len(acik_portlar)} adet açık port tespit edildi, "
+                "analiz motoruna iletiliyor...\n"
             )
             analiz_et(acik_portlar)
 

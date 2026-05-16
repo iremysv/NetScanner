@@ -97,7 +97,8 @@ class LiveSniffer:
         """Arka planda sniffing işlemini yürüten iş parçacığı (worker) fonksiyonu."""
         try:
             logger.info(
-                f"Canlı ağ dinlemesi başlatıldı. Arayüz: {interface if interface else 'Otomatik Seçim'}"
+                f"Canlı ağ dinlemesi başlatıldı. "
+                f"Arayüz: {interface if interface else 'Otomatik Seçim'}"
             )
             # stop_filter, _stop_event True olunca sniffing'i durdurur
             sniff(
@@ -109,7 +110,8 @@ class LiveSniffer:
         except Exception as e:
             if "Permission" in str(e) or "root" in str(e):
                 logger.error(
-                    "Sniffing için yeterli izin yok. Lütfen programı yönetici (sudo) haklarıyla çalıştırın."
+                    "Sniffing için yeterli izin yok. "
+                    "Lütfen programı yönetici (sudo) haklarıyla çalıştırın."
                 )
             else:
                 logger.error(f"Sniffing sırasında beklenmeyen bir hata oluştu: {e}")
