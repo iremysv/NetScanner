@@ -63,7 +63,10 @@ def ana_menu() -> None:
                 sonuclar = analyzer.analyze()
                 trafik_raporu_olustur("live_sniff", sonuclar)
             elif secim == "9":
-                print("\n[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan http://localhost:8000 adresine gidin. Çıkmak için CTRL+C yapın.")
+                print(
+                    "\n[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan "
+                    "http://localhost:8000 adresine gidin. Çıkmak için CTRL+C yapın."
+                )
                 try:
                     import uvicorn
                     uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
@@ -131,7 +134,10 @@ def main():
         hiz = Ayarlar.TARAMA_HIZI
         nmap_calistir(["nmap", hiz, "-F", args.target], args.target, "test_tarama")
     elif args.web:
-        print("[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan http://localhost:8000 adresine gidin.")
+        print(
+            "[*] Web Arayüzü Başlatılıyor... "
+            "Tarayıcınızdan http://localhost:8000 adresine gidin."
+        )
         try:
             import uvicorn
             uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
