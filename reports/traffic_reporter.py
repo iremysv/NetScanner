@@ -88,7 +88,10 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
     th { background-color: #3498db; color: white; }
     tr:hover { background-color: #f1f1f1; }
-    .alert { background: #ffeded; border-left: 5px solid #e74c3c; padding: 15px; margin-bottom: 10px; }
+    .alert {
+        background: #ffeded; border-left: 5px solid #e74c3c;
+        padding: 15px; margin-bottom: 10px;
+    }
     .alert-title { color: #c0392b; font-weight: bold; }
     .badge {
         display: inline-block; padding: 5px 10px; border-radius: 15px;

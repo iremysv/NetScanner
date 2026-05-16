@@ -218,7 +218,10 @@ async def upload_pcap(file: UploadFile = File(...)):
         )
 
     await manager.broadcast(
-        {"type": "info", "message": f"'{filename}' dosyası sisteme yükleniyor ve analiz ediliyor..."}
+        {
+            "type": "info",
+            "message": f"'{filename}' dosyası sisteme yükleniyor ve analiz ediliyor...",
+        }
     )
 
     content = await file.read()
@@ -246,7 +249,11 @@ async def upload_pcap(file: UploadFile = File(...)):
             await manager.broadcast(
                 {"type": "success", "message": f"'{filename}' analizi tamamlandı."}
             )
-            return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
+            return {
+                "status": "success",
+                "data": sonuclar,
+                "message": "Analiz başarıyla tamamlandı.",
+            }
         else:
             return {"status": "error", "message": "PCAP dosyası okunamadı veya geçersiz."}
 
