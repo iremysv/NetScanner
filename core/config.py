@@ -14,5 +14,6 @@ PORT_SCAN_THRESHOLD = 15  # Bir IP'nin kısa sürede taradığı farklı port sa
 DNS_TUNNELING_THRESHOLD = 50  # Kısa sürede aşırı DNS isteği yapma sınırı
 SYN_FLOOD_THRESHOLD = 100  # Bir IP'nin cevap almadan gönderdiği SYN paket sayısı
 ARP_SPOOF_THRESHOLD = 5  # Aynı IP için farklı MAC adreslerinden gelen ARP sayısı
-LARGE_PAYLOAD_THRESHOLD = 50000  # Bayt cinsinden tek seferde giden aşırı büyük veri boyutu (Data Exfiltration)
+# Bayt cinsinden tek seferde giden aşırı büyük veri boyutu (Data Exfiltration)
+LARGE_PAYLOAD_THRESHOLD = 50000
 TRAFIK_RAPOR_DIZINI = "taramalar/traffic_reports"
