@@ -15,23 +15,23 @@ class TrafficAnalyzer:
     ve GeoIP destekli motor.
     """
 
-    def __init__(self, packets: list):
+    def __init__(self, packets: list) -> None:
         self.packets = packets
-        self.ip_frequencies = defaultdict(int)
-        self.protocol_distribution = defaultdict(int)
+        self.ip_frequencies: defaultdict[str, int] = defaultdict(int)
+        self.protocol_distribution: defaultdict[str, int] = defaultdict(int)
 
         # Anomali tespiti için veri yapıları
-        self.ip_to_ports = defaultdict(set)
-        self.dns_requests = defaultdict(int)
-        self.syn_counts = defaultdict(int)
-        self.large_transfers = []
+        self.ip_to_ports: defaultdict[str, set[int]] = defaultdict(set)
+        self.dns_requests: defaultdict[str, int] = defaultdict(int)
+        self.syn_counts: defaultdict[str, int] = defaultdict(int)
+        self.large_transfers: list[tuple[str, str, int]] = []
 
         # DPI için (Şüpheli Payload ve DNS tünelleme)
-        self.suspicious_dns = []
-        self.suspicious_http = []
+        self.suspicious_dns: list[tuple[str, str]] = []
+        self.suspicious_http: list[tuple[str, str]] = []
 
         # GeoIP Önbelleği (Gereksiz istekleri engellemek için)
-        self.geoip_cache = {}
+        self.geoip_cache: dict[str, str] = {}
 
     def analyze(self) -> dict:
         if not self.packets:
