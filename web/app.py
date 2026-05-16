@@ -1,17 +1,23 @@
 # -*- coding: utf-8 -*-
 import asyncio
-import json
 import os
 import re
 import tempfile
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, File, UploadFile
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Request,
+    WebSocket,
+    WebSocketDisconnect,
+    File,
+    UploadFile,
+)
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, field_validator
 
 # Mevcut modüller
-from core import config as Ayarlar
 from modules.nmap_integration.scanner import nmap_calistir
 from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
@@ -27,6 +33,7 @@ templates = Jinja2Templates(directory="web/templates")
 # Analiz Motoru ve Sniffer
 analyzer = TrafficAnalyzer([])
 live_sniffer = LiveSniffer()
+
 
 # WebSocket bağlantılarını yönetecek sınıf
 class ConnectionManager:
@@ -52,10 +59,13 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+
 # Ana Sayfa (Dashboard)
 @app.get("/", response_class=HTMLResponse)
 async def get_dashboard(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html", context={"request": request})
+    return templates.TemplateResponse(
+        request=request, name="index.html", context={"request": request}
+    )
 
 # Tarama İstek Modeli
 _ALLOWED_SCAN_TYPES = {"quick", "detailed"}
@@ -95,23 +105,27 @@ class ScanRequest(BaseModel):
             )
         return v
 
+
 # Nmap Tarama API
 @app.post("/api/scan")
 async def run_scan(req: ScanRequest):
-    # Arka planda asenkron olarak komut çalıştırmak için asyncio kullanılır
-    # Hızlıca nmap komutlarını ayarlayalım
     hedef = req.target
-    komut_listesi = ["nmap", "-T4", "-F", hedef] if req.scan_type == "quick" else ["nmap", "-T4", "-sV", hedef]
-    
-    # WebSocket ile anlık "Başladı" mesajı atabiliriz
-    await manager.broadcast({"type": "info", "message": f"{hedef} için tarama başlatılıyor..."})
-    
-    # Nmap calistirma
+    if req.scan_type == "quick":
+        komut_listesi = ["nmap", "-T4", "-F", hedef]
+    else:
+        komut_listesi = ["nmap", "-T4", "-sV", hedef]
+
+    # WebSocket ile anlık "Başladı" mesajı
+    await manager.broadcast(
+        {"type": "info", "message": f"{hedef} için tarama başlatılıyor..."}
+    )
+
     sonuc_text, rapor_yolu = nmap_calistir(komut_listesi, hedef, f"web_scan_{hedef}")
-    
+
     if sonuc_text:
         return {"status": "success", "result": sonuc_text, "report_path": rapor_yolu}
     return {"status": "error", "message": "Tarama başarısız oldu."}
+
 
 # Canlı Sistem Metrikleri & Log Akışı (WebSocket)
 @app.websocket("/ws/traffic")
@@ -127,54 +141,70 @@ async def websocket_endpoint(websocket: WebSocket):
                 if current_count > last_packet_count:
                     new_packets = current_packets[last_packet_count:current_count]
                     last_packet_count = current_count
-                    
+
                     # Son 5 paketin özetini arayüze canlı yansıtmak için
                     latest_previews = [
                         f"[{p['protocol']}] {p['src_ip']} -> {p['dst_ip']} ({p['length']} byte)"
                         for p in new_packets[-5:]
                     ]
-                    
-                    await websocket.send_json({
-                        "type": "live_traffic", 
-                        "count": current_count,
-                        "latest": latest_previews
-                    })
+
+                    await websocket.send_json(
+                        {"type": "live_traffic", "count": current_count, "latest": latest_previews}
+                    )
                 else:
-                    await websocket.send_json({"type": "live_traffic", "count": current_count, "latest": []})
+                    await websocket.send_json(
+                        {"type": "live_traffic", "count": current_count, "latest": []}
+                    )
             else:
                 last_packet_count = 0
                 await websocket.send_json({"type": "ping", "message": "Alive"})
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
+
 # Canlı Dinleme (Live Sniffing) Başlatma API
 @app.post("/api/sniff/start")
 async def start_sniffing():
     if live_sniffer._sniff_thread and live_sniffer._sniff_thread.is_alive():
         return {"status": "error", "message": "Canlı izleme zaten çalışıyor."}
-    
+
     live_sniffer.start_sniffing()
-    await manager.broadcast({"type": "info", "message": "Canlı paket dinlemesi arka planda başlatıldı."})
+    await manager.broadcast(
+        {"type": "info", "message": "Canlı paket dinlemesi arka planda başlatıldı."}
+    )
     return {"status": "success", "message": "Canlı izleme başlatıldı."}
+
 
 # Canlı Dinleme (Live Sniffing) Durdurma ve Analiz API
 @app.post("/api/sniff/stop")
 async def stop_sniffing():
     if not live_sniffer._sniff_thread or not live_sniffer._sniff_thread.is_alive():
         return {"status": "error", "message": "Çalışan bir canlı izleme işlemi bulunamadı."}
-        
+
     live_sniffer.stop_sniffing()
     paketler = live_sniffer.get_parsed_packets()
-    
+
     if not paketler:
-        return {"status": "success", "message": "Dinleme durduruldu. Herhangi bir ağ paketi yakalanamadı.", "data": {}}
-        
+        return {
+            "status": "success",
+            "message": "Dinleme durduruldu. Herhangi bir ağ paketi yakalanamadı.",
+            "data": {},
+        }
+
     analyzer_instance = TrafficAnalyzer(paketler)
     sonuclar = analyzer_instance.analyze()
     trafik_raporu_olustur("web_live_sniff", sonuclar)
-    
-    await manager.broadcast({"type": "success", "message": f"Canlı izleme durduruldu. Toplam {len(paketler)} paket yakalandı ve analiz edildi."})
+
+    await manager.broadcast(
+        {
+            "type": "success",
+            "message": (
+                f"Canlı izleme durduruldu. Toplam {len(paketler)} paket yakalandı ve analiz edildi."
+            ),
+        }
+    )
     return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
+
 
 # PCAP Dosya Yükleme ve Analiz API
 @app.post("/api/pcap_upload")
@@ -195,9 +225,7 @@ async def upload_pcap(file: UploadFile = File(...)):
 
     # Güvenli geçici dosya — isim enjeksiyonuna karşı NamedTemporaryFile kullan
     try:
-        with tempfile.NamedTemporaryFile(
-            suffix=".pcap", delete=False
-        ) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".pcap", delete=False) as tmp:
             tmp.write(content)
             temp_pcap_path = tmp.name
 
@@ -225,6 +253,5 @@ async def upload_pcap(file: UploadFile = File(...)):
     except Exception as e:
         return {"status": "error", "message": str(e)}
     finally:
-        if 'temp_pcap_path' in locals() and os.path.exists(temp_pcap_path):
+        if "temp_pcap_path" in locals() and os.path.exists(temp_pcap_path):
             os.remove(temp_pcap_path)
-
