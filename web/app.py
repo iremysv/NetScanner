@@ -121,10 +121,16 @@ async def run_scan(req: ScanRequest):
         {"type": "info", "message": f"{hedef} için tarama başlatılıyor..."}
     )
 
-    sonuc_text, rapor_yolu = nmap_calistir(komut_listesi, hedef, f"web_scan_{hedef}")
+    sonuc_text, rapor_yolu = nmap_calistir(
+        komut_listesi, hedef, f"web_scan_{hedef}"
+    )
 
     if sonuc_text:
-        return {"status": "success", "result": sonuc_text, "report_path": rapor_yolu}
+        return {
+            "status": "success",
+            "result": sonuc_text,
+            "report_path": rapor_yolu,
+        }
     return {"status": "error", "message": "Tarama başarısız oldu."}
 
 
@@ -142,7 +148,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 current_packets = live_sniffer.get_parsed_packets()
                 current_count = len(current_packets)
                 if current_count > last_packet_count:
-                    new_packets = current_packets[last_packet_count:current_count]
+                    new_packets = current_packets[
+                        last_packet_count:current_count
+                    ]
                     last_packet_count = current_count
 
                     # Son 5 paketin özetini arayüze canlı yansıtmak için
@@ -163,7 +171,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     )
                 else:
                     await websocket.send_json(
-                        {"type": "live_traffic", "count": current_count, "latest": []}
+                        {
+                            "type": "live_traffic",
+                            "count": current_count,
+                            "latest": [],
+                        }
                     )
             else:
                 last_packet_count = 0
@@ -182,7 +194,12 @@ async def start_sniffing():
 
     live_sniffer.start_sniffing()
     await manager.broadcast(
-        {"type": "info", "message": "Canlı paket dinlemesi arka planda başlatıldı."}
+        {
+            "type": "info",
+            "message": (
+                "Canlı paket dinlemesi arka planda başlatıldı."
+            ),
+        }
     )
     return {"status": "success", "message": "Canlı izleme başlatıldı."}
 
@@ -204,7 +221,10 @@ async def stop_sniffing():
     if not paketler:
         return {
             "status": "success",
-            "message": "Dinleme durduruldu. Herhangi bir ağ paketi yakalanamadı.",
+            "message": (
+                "Dinleme durduruldu. "
+                "Herhangi bir ağ paketi yakalanamadı."
+            ),
             "data": {},
         }
 
@@ -245,7 +265,10 @@ async def upload_pcap(file: UploadFile = File(...)):
     await manager.broadcast(
         {
             "type": "info",
-            "message": f"'{filename}' dosyası sisteme yükleniyor ve analiz ediliyor...",
+            "message": (
+                f"'{filename}' dosyası sisteme"
+                " yüklüniyor ve analiz ediliyor..."
+            ),
         }
     )
 
@@ -275,7 +298,10 @@ async def upload_pcap(file: UploadFile = File(...)):
 
             trafik_raporu_olustur("web_pcap", sonuclar)
             await manager.broadcast(
-                {"type": "success", "message": f"'{filename}' analizi tamamlandı."}
+                {
+                    "type": "success",
+                    "message": f"'{filename}' analizi tamamlandı.",
+                }
             )
             return {
                 "status": "success",

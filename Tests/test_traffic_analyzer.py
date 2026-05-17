@@ -48,7 +48,8 @@ def _make_packet(
 # GeoIP dış API çağrısını tüm testlerde otomatik mock'la
 @pytest.fixture(autouse=True)
 def mock_geoip(monkeypatch):
-    """ip-api.com çağrısını engelle; tüm IP'ler için 'Yerel Ağ (Local)' döndür."""
+    """ip-api.com çağrısını engelle;
+    tüm IP'ler için 'Yerel Ağ (Local)' döndür."""
     monkeypatch.setattr(
         "modules.packet_engine.traffic_analyzer"
         ".TrafficAnalyzer._get_geoip",
@@ -103,7 +104,8 @@ class TestTrafficAnalyzerBasic:
         )
 
     def test_top_talkers_structure(self):
-        """top_talkers listesi dict'lerden oluşmalı ve ip/count/location içermeli."""
+        """top_talkers listesi dict'lerden oluşmalı;
+        ip/count/location içermeli."""
         packets = [_make_packet("192.168.1.100") for _ in range(5)]
         result = TrafficAnalyzer(packets).analyze()
         talkers = result["top_talkers"]
@@ -223,7 +225,8 @@ class TestAnomalyDetection:
 
     def test_http_malicious_payload_detected(self):
         """
-        HTTP paketinde SQL/XSS içeren payload → HTTP_MALICIOUS_PAYLOAD anomalisi.
+        HTTP paketinde SQL/XSS içeren payload
+        → HTTP_MALICIOUS_PAYLOAD anomalisi.
         """
         packets = [
             _make_packet(
@@ -239,7 +242,8 @@ class TestAnomalyDetection:
         )
 
     def test_multiple_anomalies_from_same_ip(self):
-        """Aynı IP hem port scan hem SYN flood yapabilmeli → her iki anomali de listede."""
+        """Aynı IP hem port scan hem SYN flood yapabilmeli
+        → her iki anomali de listede."""
         from core import config as Ayarlar
 
         ip = "198.51.100.1"

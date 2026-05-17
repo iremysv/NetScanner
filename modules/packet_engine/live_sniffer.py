@@ -23,7 +23,8 @@ class LiveSniffer:
 
     def _packet_handler(self, pkt):
         """
-        Scapy tarafından yakalanan her bir paket için çağrılan callback fonksiyonu.
+        Scapy tarafından yakalanan her bir paket için
+        çağrılan callback fonksiyonu.
         Paketi ayrıştırır ve self.parsed_packets listesine ekler.
         """
         if IP in pkt or IPv6 in pkt:
@@ -148,7 +149,10 @@ class LiveSniffer:
                 f"Toplam {len(self.parsed_packets)} paket yakalandı."
             )
         else:
-            logger.warning("Durdurulacak aktif bir sniffing işlemi bulunamadı.")
+            logger.warning(
+                "Durdurulacak aktif bir sniffing işlemi "
+                "bulunamadı."
+            )
 
     def get_parsed_packets(self):
         """

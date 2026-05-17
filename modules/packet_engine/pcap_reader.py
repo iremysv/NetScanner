@@ -38,8 +38,8 @@ class PcapReader:
 
     def read_pcap(self):
         """
-        Belirtilen PCAP dosyasını iteratif (parça parça) okur ve aynı anda ayrıştırır.
-        Bellek dostudur.
+        Belirtilen PCAP dosyasını iteratif (parça parça)
+        okur ve aynı anda ayrıştırır. Bellek dostudur.
         """
         if not os.path.exists(self.file_path):
             logger.error(f"Dosya bulunamadı: {self.file_path}")
@@ -55,7 +55,10 @@ class PcapReader:
             # PcapReader ile iteratif okuma
             with ScapyPcapReader(self.file_path) as pcap_reader:
                 with tqdm(
-                    total=file_size, unit="B", unit_scale=True, desc="PCAP İşleniyor"
+                    total=file_size,
+                    unit="B",
+                    unit_scale=True,
+                    desc="PCAP İşleniyor",
                 ) as pbar:
                     for pkt in pcap_reader:
                         # pkt.wirelen bize paketin tahmini bayt boyutunu verir
@@ -96,14 +99,16 @@ class PcapReader:
         """
         if not self._read_success:
             logger.warning(
-                "Ayrıştırılacak paket bulunamadı. Lütfen önce read_pcap() çalıştırın."
+                "Ayrıştırılacak paket bulunamadı. "
+                "Lütfen önce read_pcap() çalıştırın."
             )
             return []
         return self.parsed_data
 
     def _extract_packet_info(self, pkt):
         """
-        Tek bir paketten kaynak/hedef, port ve Payload (DPI) bilgilerini çıkarır.
+        Tek bir paketten kaynak/hedef, port ve
+        Payload (DPI) bilgilerini çıkarır.
         """
         if IP in pkt:
             ip_src = pkt[IP].src
@@ -132,14 +137,17 @@ class PcapReader:
                 protocol = "HTTP"
                 if Raw in pkt:
                     try:
-                        # HTTP User-Agent veya URL çıkartmayı deneyelim
-                        raw_data = pkt[Raw].load.decode("utf-8", errors="ignore")
+                        # HTTP User-Agent veya URL çıkartı
+                        raw_data = pkt[Raw].load.decode(
+                            "utf-8", errors="ignore"
+                        )
                         if (
                             "HTTP" in raw_data
                             or "GET " in raw_data
                             or "POST " in raw_data
                         ):
-                            payload_data = raw_data[:200]  # İlk 200 karakteri sakla
+                            # İlk 200 karakteri sakla
+                            payload_data = raw_data[:200]
                     except Exception:
                         pass
             elif src_port == 443 or dst_port == 443:
