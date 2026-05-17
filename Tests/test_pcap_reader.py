@@ -5,13 +5,15 @@ Unit testler: PcapReader sınıfının PCAP okuma, parse etme ve
 hata yönetimi davranışlarını doğrular.
 dummy.pcap → proje kök dizinindeki gerçek test dosyası kullanılır.
 """
-import sys
 import os
+import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
-import pytest
-from modules.packet_engine.pcap_reader import PcapReader
+import pytest  # noqa: E402
+from modules.packet_engine.pcap_reader import PcapReader  # noqa: E402
 
 # Proje kökündeki dummy.pcap dosyasının mutlak yolu
 DUMMY_PCAP = os.path.abspath(
@@ -46,7 +48,9 @@ class TestPcapReaderReadPcap:
         """Var olmayan bir dosya için read_pcap() False döndürmeli."""
         reader = PcapReader(NONEXISTENT_PCAP)
         result = reader.read_pcap()
-        assert result is False, f"Var olmayan dosya için True döndü: {result}"
+        assert result is False, (
+            f"Var olmayan dosya için True döndü: {result}"
+        )
 
     def test_nonexistent_file_leaves_parsed_data_empty(self):
         """Var olmayan dosya sonrası parsed_data boş kalmalıdır."""
@@ -78,7 +82,9 @@ class TestPcapReaderParsePackets:
         """read_pcap() çağrılmadan parse_packets() boş liste döndürmeli."""
         reader = PcapReader(DUMMY_PCAP)
         packets = reader.parse_packets()
-        assert packets == [], f"read_pcap() olmadan boş liste beklendi, alınan: {packets}"
+        assert packets == [], (
+            f"read_pcap() olmadan boş liste beklendi, alınan: {packets}"
+        )
 
     def test_parse_after_read_returns_list(self):
         """Başarılı read_pcap() sonrası parse_packets() liste döndürmeli."""
@@ -98,7 +104,9 @@ class TestPcapReaderParsePackets:
         reader = PcapReader(DUMMY_PCAP)
         reader.read_pcap()
         packets = reader.parse_packets()
-        assert len(packets) > 0, "dummy.pcap'tan en az 1 paket parse edilmeli."
+        assert len(packets) > 0, (
+            "dummy.pcap'tan en az 1 paket parse edilmeli."
+        )
 
     def test_parsed_packet_has_required_fields(self):
         """Her parse edilmiş paket gerekli anahtarları içermeli."""

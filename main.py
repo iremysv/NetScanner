@@ -52,7 +52,8 @@ def ana_menu() -> None:
                     trafik_raporu_olustur("pcap_analiz", sonuclar)
             elif secim == "8":
                 print(
-                    "\n[*] Canlı Ağ İzleme Başlatılıyor... (Durdurmak için ENTER'a basın)"
+                    "\n[*] Canlı Ağ İzleme Başlatılıyor..."
+                    " (Durdurmak için ENTER'a basın)"
                 )
                 sniffer = LiveSniffer()
                 sniffer.start_sniffing()
@@ -69,7 +70,12 @@ def ana_menu() -> None:
                 )
                 try:
                     import uvicorn
-                    uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
+                    uvicorn.run(
+                        "web.app:app",
+                        host="127.0.0.1",
+                        port=8000,
+                        reload=False,
+                    )
                 except ImportError:
                     print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
             continue
@@ -88,9 +94,13 @@ def ana_menu() -> None:
         elif secim == "3":
             nmap_calistir(["nmap", hiz, "-sV", hedef], hedef, "servis_analizi")
         elif secim == "4":
-            nmap_calistir(["sudo", "nmap", hiz, "-O", hedef], hedef, "os_analizi")
+            nmap_calistir(
+                ["sudo", "nmap", hiz, "-O", hedef], hedef, "os_analizi"
+            )
         elif secim == "5":
-            nmap_calistir(["sudo", "nmap", hiz, "-A", hedef], hedef, "agresif_tarama")
+            nmap_calistir(
+                ["sudo", "nmap", hiz, "-A", hedef], hedef, "agresif_tarama"
+            )
         elif secim == "6":
             sonuc = zafiyet_tara(hedef)
             rapor_yaz(f"{hedef}_zafiyet", sonuc)
@@ -101,10 +111,14 @@ def ana_menu() -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu"
+        description=(
+            "NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu"
+        )
     )
     # PCAP okuma argümanı
-    parser.add_argument("-p", "--pcap", help="Analiz edilecek .pcap dosyasının yolu")
+    parser.add_argument(
+        "-p", "--pcap", help="Analiz edilecek .pcap dosyasının yolu"
+    )
     parser.add_argument("-t", "--target", help="Hedef IP veya Domain adresi")
     parser.add_argument(
         "--test-nmap",
@@ -122,7 +136,9 @@ def main():
     if len(sys.argv) == 1:
         ana_menu()
     elif args.pcap:
-        print(f"[*] {args.pcap} dosyası okunuyor ve analiz ediliyor...")
+        print(
+            f"[*] {args.pcap} dosyası okunuyor ve analiz ediliyor..."
+        )
         reader = PcapReader(args.pcap)
         if reader.read_pcap():
             paketler = reader.parse_packets()
@@ -130,9 +146,13 @@ def main():
             sonuclar = analyzer.analyze()
             trafik_raporu_olustur("cli_pcap", sonuclar)
     elif args.test_nmap and args.target:
-        print(f"[*] {args.target} için entegrasyon testi başlatılıyor...")
+        print(
+            f"[*] {args.target} için entegrasyon testi başlatılıyor..."
+        )
         hiz = Ayarlar.TARAMA_HIZI
-        nmap_calistir(["nmap", hiz, "-F", args.target], args.target, "test_tarama")
+        nmap_calistir(
+            ["nmap", hiz, "-F", args.target], args.target, "test_tarama"
+        )
     elif args.web:
         print(
             "[*] Web Arayüzü Başlatılıyor... "
@@ -140,7 +160,12 @@ def main():
         )
         try:
             import uvicorn
-            uvicorn.run("web.app:app", host="127.0.0.1", port=8000, reload=False)
+            uvicorn.run(
+                "web.app:app",
+                host="127.0.0.1",
+                port=8000,
+                reload=False,
+            )
         except ImportError:
             print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
     else:

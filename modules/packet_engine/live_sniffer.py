@@ -47,7 +47,9 @@ class LiveSniffer:
                     protocol = "HTTP"
                     if Raw in pkt:
                         try:
-                            raw_data = pkt[Raw].load.decode("utf-8", errors="ignore")
+                            raw_data = pkt[Raw].load.decode(
+                                "utf-8", errors="ignore"
+                            )
                             if (
                                 "HTTP" in raw_data
                                 or "GET " in raw_data
@@ -94,7 +96,7 @@ class LiveSniffer:
             self.parsed_packets.append(parsed_data)
 
     def _sniff_worker(self, interface=None):
-        """Arka planda sniffing işlemini yürüten iş parçacığı (worker) fonksiyonu."""
+        """Arka planda sniffing işlemini yürüten İş parçacığı fonksiyonu."""
         try:
             logger.info(
                 f"Canlı ağ dinlemesi başlatıldı. "
@@ -114,7 +116,9 @@ class LiveSniffer:
                     "Lütfen programı yönetici (sudo) haklarıyla çalıştırın."
                 )
             else:
-                logger.error(f"Sniffing sırasında beklenmeyen bir hata oluştu: {e}")
+                logger.error(
+                    f"Sniffing sırasında beklenmeyen bir hata oluştu: {e}"
+                )
 
     def start_sniffing(self, interface=None):
         """
@@ -140,7 +144,8 @@ class LiveSniffer:
             self._stop_event.set()
             self._sniff_thread.join()
             logger.info(
-                f"Dinleme durduruldu. Toplam {len(self.parsed_packets)} paket yakalandı."
+                f"Dinleme durduruldu. "
+                f"Toplam {len(self.parsed_packets)} paket yakalandı."
             )
         else:
             logger.warning("Durdurulacak aktif bir sniffing işlemi bulunamadı.")

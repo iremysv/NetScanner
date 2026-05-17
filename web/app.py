@@ -136,7 +136,9 @@ async def websocket_endpoint(websocket: WebSocket):
         last_packet_count = 0
         while True:
             await asyncio.sleep(2)
-            if live_sniffer._sniff_thread and live_sniffer._sniff_thread.is_alive():
+            if live_sniffer._sniff_thread and (
+                live_sniffer._sniff_thread.is_alive()
+            ):
                 current_packets = live_sniffer.get_parsed_packets()
                 current_count = len(current_packets)
                 if current_count > last_packet_count:
@@ -145,12 +147,19 @@ async def websocket_endpoint(websocket: WebSocket):
 
                     # Son 5 paketin özetini arayüze canlı yansıtmak için
                     latest_previews = [
-                        f"[{p['protocol']}] {p['src_ip']} -> {p['dst_ip']} ({p['length']} byte)"
+                        (
+                            f"[{p['protocol']}] {p['src_ip']} -> "
+                            f"{p['dst_ip']} ({p['length']} byte)"
+                        )
                         for p in new_packets[-5:]
                     ]
 
                     await websocket.send_json(
-                        {"type": "live_traffic", "count": current_count, "latest": latest_previews}
+                        {
+                            "type": "live_traffic",
+                            "count": current_count,
+                            "latest": latest_previews,
+                        }
                     )
                 else:
                     await websocket.send_json(
@@ -166,7 +175,9 @@ async def websocket_endpoint(websocket: WebSocket):
 # Canlı Dinleme (Live Sniffing) Başlatma API
 @app.post("/api/sniff/start")
 async def start_sniffing():
-    if live_sniffer._sniff_thread and live_sniffer._sniff_thread.is_alive():
+    if live_sniffer._sniff_thread and (
+        live_sniffer._sniff_thread.is_alive()
+    ):
         return {"status": "error", "message": "Canlı izleme zaten çalışıyor."}
 
     live_sniffer.start_sniffing()
@@ -179,8 +190,13 @@ async def start_sniffing():
 # Canlı Dinleme (Live Sniffing) Durdurma ve Analiz API
 @app.post("/api/sniff/stop")
 async def stop_sniffing():
-    if not live_sniffer._sniff_thread or not live_sniffer._sniff_thread.is_alive():
-        return {"status": "error", "message": "Çalışan bir canlı izleme işlemi bulunamadı."}
+    if not live_sniffer._sniff_thread or not (
+        live_sniffer._sniff_thread.is_alive()
+    ):
+        return {
+            "status": "error",
+            "message": "Çalışan bir canlı izleme işlemi bulunamadı.",
+        }
 
     live_sniffer.stop_sniffing()
     paketler = live_sniffer.get_parsed_packets()
@@ -200,11 +216,16 @@ async def stop_sniffing():
         {
             "type": "success",
             "message": (
-                f"Canlı izleme durduruldu. Toplam {len(paketler)} paket yakalandı ve analiz edildi."
+                f"Canlı izleme durduruldu. Toplam {len(paketler)} "
+                f"paket yakalandı ve analiz edildi."
             ),
         }
     )
-    return {"status": "success", "data": sonuclar, "message": "Analiz başarıyla tamamlandı."}
+    return {
+        "status": "success",
+        "data": sonuclar,
+        "message": "Analiz başarıyla tamamlandı.",
+    }
 
 
 # PCAP Dosya Yükleme ve Analiz API
@@ -215,7 +236,10 @@ async def upload_pcap(file: UploadFile = File(...)):
     if not filename.lower().endswith((".pcap", ".pcapng")):
         raise HTTPException(
             status_code=400,
-            detail="Sadece .pcap veya .pcapng uzantılı dosyalar kabul edilmektedir.",
+            detail=(
+                "Sadece .pcap veya .pcapng uzantılı dosyalar "
+                "kabul edilmektedir."
+            ),
         )
 
     await manager.broadcast(
@@ -243,7 +267,10 @@ async def upload_pcap(file: UploadFile = File(...)):
             if not sonuclar:
                 return {
                     "status": "error",
-                    "message": "PCAP dosyası analiz edilemedi veya desteklenen paket bulunamadı.",
+                    "message": (
+                        "PCAP dosyası analiz edilemedi veya "
+                        "desteklenen paket bulunamadı."
+                    ),
                 }
 
             trafik_raporu_olustur("web_pcap", sonuclar)
@@ -256,7 +283,10 @@ async def upload_pcap(file: UploadFile = File(...)):
                 "message": "Analiz başarıyla tamamlandı.",
             }
         else:
-            return {"status": "error", "message": "PCAP dosyası okunamadı veya geçersiz."}
+            return {
+                "status": "error",
+                "message": "PCAP dosyası okunamadı veya geçersiz.",
+            }
 
     except Exception as e:
         return {"status": "error", "message": str(e)}

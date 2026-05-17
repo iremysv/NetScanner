@@ -39,10 +39,13 @@ class TrafficAnalyzer:
             return {}
 
         logger.info(
-            f"Derin Paket Analizi başlatılıyor... Toplam paket: {len(self.packets)}"
+            "Derin Paket Analizi başlatılıyor... "
+            f"Toplam paket: {len(self.packets)}"
         )
 
-        large_payload_thresh = getattr(Ayarlar, "LARGE_PAYLOAD_THRESHOLD", 50000)
+        large_payload_thresh = getattr(
+            Ayarlar, "LARGE_PAYLOAD_THRESHOLD", 50000
+        )
 
         for pkt in self.packets:
             src_ip = pkt.get("src_ip")
@@ -124,12 +127,14 @@ class TrafficAnalyzer:
 
         try:
             response = requests.get(
-                f"http://ip-api.com/json/{ip_str}?fields=country,city", timeout=2
+                f"http://ip-api.com/json/{ip_str}?fields=country,city",
+                timeout=2,
             )
             if response.status_code == 200:
                 data = response.json()
                 location = (
-                    f"{data.get('country', 'Bilinmiyor')} - {data.get('city', '')}"
+                    f"{data.get('country', 'Bilinmiyor')} "
+                    f"- {data.get('city', '')}"
                 )
                 self.geoip_cache[ip_str] = location
                 return location
@@ -157,7 +162,10 @@ class TrafficAnalyzer:
                     {
                         "type": "PORT_SCAN",
                         "source_ip": ip,
-                        "details": f"{len(ports)} farklı porta erişim denemesi tespit edildi.",
+                        "details": (
+                            f"{len(ports)} farklı porta erişim "
+                            "denemesi tespit edildi."
+                        ),
                     }
                 )
 
@@ -169,7 +177,10 @@ class TrafficAnalyzer:
                     {
                         "type": "DNS_TUNNELING_SUSPICION",
                         "source_ip": ip,
-                        "details": f"{req_count} adet anormal DNS isteği tespit edildi.",
+                        "details": (
+                            f"{req_count} adet anormal DNS isteği "
+                            "tespit edildi."
+                        ),
                     }
                 )
 
@@ -191,7 +202,8 @@ class TrafficAnalyzer:
                         "type": "SYN_FLOOD_DDOS",
                         "source_ip": ip,
                         "details": (
-                            f"{syn_count} adet sadece SYN paketi (ACK beklenmeyen) gönderildi."
+                            f"{syn_count} adet sadece SYN paketi "
+                            "(ACK beklenmeyen) gönderildi."
                         ),
                     }
                 )
@@ -202,7 +214,10 @@ class TrafficAnalyzer:
                 {
                     "type": "DATA_EXFILTRATION",
                     "source_ip": src,
-                    "details": f"Aşırı büyük payload aktarımı ({length} byte) Hedef: {dst}",
+                    "details": (
+                        f"Aşırı büyük payload aktarımı ({length} byte) "
+                        f"Hedef: {dst}"
+                    ),
                 }
             )
 
@@ -212,7 +227,10 @@ class TrafficAnalyzer:
                 {
                     "type": "HTTP_MALICIOUS_PAYLOAD",
                     "source_ip": ip,
-                    "details": f"HTTP paketinde şüpheli veri tespit edildi: {payload[:50]}...",
+                    "details": (
+                        f"HTTP paketinde şüpheli veri tespit edildi: "
+                        f"{payload[:50]}..."
+                    ),
                 }
             )
 

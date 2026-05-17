@@ -27,7 +27,8 @@ class PcapReader:
     """
     .pcap ve .pcapng uzantılı ağ trafiği dosyalarını okumak ve
     içerisindeki paketleri analiz için hazırlamakla görevli sınıf.
-    Büyük dosyalar için iteratif okuma (Progress Bar ile) ve DPI (Derin Paket İnceleme) destekler.
+    Büyük dosyalar için iteratif okuma (Progress Bar ile) ve
+    DPI (Derin Paket İnceleme) destekler.
     """
 
     def __init__(self, file_path):
@@ -45,7 +46,8 @@ class PcapReader:
             return False
 
         logger.info(
-            f"PCAP dosyası DPI (Derin İnceleme) ile okunuyor: {self.file_path} ... Lütfen bekleyin."
+            "PCAP dosyası DPI (Derin İnceleme) ile okunuyor: "
+            f"{self.file_path} ... Lütfen bekleyin."
         )
         file_size = os.path.getsize(self.file_path)
 
@@ -57,7 +59,11 @@ class PcapReader:
                 ) as pbar:
                     for pkt in pcap_reader:
                         # pkt.wirelen bize paketin tahmini bayt boyutunu verir
-                        pkt_len = pkt.wirelen if hasattr(pkt, "wirelen") else len(pkt)
+                        pkt_len = (
+                            pkt.wirelen
+                            if hasattr(pkt, "wirelen")
+                            else len(pkt)
+                        )
                         pbar.update(pkt_len)
 
                         # Anında Parse Et (Bellek Tasarrufu)
@@ -66,7 +72,8 @@ class PcapReader:
                             self.parsed_data.append(parsed_pkt)
 
             logger.info(
-                f"Başarıyla okundu ve ayrıştırıldı. Toplam paket sayısı: {len(self.parsed_data)}"
+                f"Başarıyla okundu ve ayrıştırıldı. "
+                f"Toplam paket sayısı: {len(self.parsed_data)}"
             )
             self._read_success = True
             return True

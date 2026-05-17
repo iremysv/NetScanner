@@ -8,13 +8,22 @@ def analiz_et(port_listesi: list[str]) -> None:
             "🌐 HTTP: Web zafiyetleri (XSS, SQLi) ve "
             "açık dizin taraması yapılması önerilir."
         ),
-        "443": "🔐 HTTPS: SSL/TLS yapılandırması ve güvenli veri iletimi kontrol edilmelidir.",
+        "443": (
+            "🔐 HTTPS: SSL/TLS yapılandırması ve güvenli veri iletimi "
+            "kontrol edilmelidir."
+        ),
         "21": (
             "📁 FTP: Kimlik doğrulama ve kaba kuvvet (Brute Force) "
             "riskleri incelenmelidir."
         ),
-        "22": "🔑 SSH: Uzaktan erişim güvenliği ve yetkisiz giriş denemeleri analiz edilmelidir.",
-        "445": "🖥️ SMB: Ağ paylaşım izinleri ve servis zafiyetleri kontrol edilmelidir.",
+        "22": (
+            "🔑 SSH: Uzaktan erişim güvenliği ve yetkisiz giriş denemeleri "
+            "analiz edilmelidir."
+        ),
+        "445": (
+            "🖥️ SMB: Ağ paylaşım izinleri ve servis zafiyetleri "
+            "kontrol edilmelidir."
+        ),
         "3389": (
             "🚪 RDP: Uzak masaüstü güvenliği ve "
             "yetki yükseltme riskleri değerlendirilmelidir."
@@ -33,6 +42,9 @@ def analiz_et(port_listesi: list[str]) -> None:
             tespit_edildi = True
 
     if not tespit_edildi:
-        print("[+] Mevcut portlar için kritik bir yapılandırma önerisi bulunamadı.")
+        print(
+            "[+] Mevcut portlar için kritik bir yapılandırma önerisi "
+            "bulunamadı."
+        )
 
     print("=" * 60 + "\n")

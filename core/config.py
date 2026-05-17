@@ -10,10 +10,14 @@ RAPOR_DIZINI = "taramalar"
 DETAYLI_MOD = "-sV -O"
 
 # Trafik Analizi ve Anomali Eşik Değerleri
-PORT_SCAN_THRESHOLD = 15  # Bir IP'nin kısa sürede taradığı farklı port sayısı sınırı
-DNS_TUNNELING_THRESHOLD = 50  # Kısa sürede aşırı DNS isteği yapma sınırı
-SYN_FLOOD_THRESHOLD = 100  # Bir IP'nin cevap almadan gönderdiği SYN paket sayısı
-ARP_SPOOF_THRESHOLD = 5  # Aynı IP için farklı MAC adreslerinden gelen ARP sayısı
+# Bir IP'nin kısa sürede taradığı farklı port sayısı sınırı
+PORT_SCAN_THRESHOLD = 15
+# Kısa sürede aşırı DNS isteği yapma sınırı
+DNS_TUNNELING_THRESHOLD = 50
+# Bir IP'nin cevap almadan gönderdiği SYN paket sayısı
+SYN_FLOOD_THRESHOLD = 100
+# Aynı IP için farklı MAC adreslerinden gelen ARP sayısı
+ARP_SPOOF_THRESHOLD = 5
 # Bayt cinsinden tek seferde giden aşırı büyük veri boyutu (Data Exfiltration)
 LARGE_PAYLOAD_THRESHOLD = 50000
 TRAFIK_RAPOR_DIZINI = "taramalar/traffic_reports"

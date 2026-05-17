@@ -4,14 +4,17 @@ Tests/test_traffic_analyzer.py
 Unit testler: TrafficAnalyzer sınıfının analiz ve anomali tespit mantığını
 gerçek ağ bağlantısı gerektirmeden (GeoIP mock'lanarak) doğrular.
 """
-import sys
 import os
+import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
-from unittest.mock import patch
-import pytest
-from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
+import pytest  # noqa: E402
+from modules.packet_engine.traffic_analyzer import (  # noqa: E402
+    TrafficAnalyzer,
+)
 
 
 # --------------------------------------------------------------------------- #
@@ -47,7 +50,8 @@ def _make_packet(
 def mock_geoip(monkeypatch):
     """ip-api.com çağrısını engelle; tüm IP'ler için 'Yerel Ağ (Local)' döndür."""
     monkeypatch.setattr(
-        "modules.packet_engine.traffic_analyzer.TrafficAnalyzer._get_geoip",
+        "modules.packet_engine.traffic_analyzer"
+        ".TrafficAnalyzer._get_geoip",
         lambda self, ip: "Yerel Ağ (Local)",
     )
 
@@ -71,7 +75,10 @@ class TestTrafficAnalyzerBasic:
         analyzer = TrafficAnalyzer(packets)
         result = analyzer.analyze()
 
-        for key in ("total_packets", "top_talkers", "protocol_distribution", "anomalies"):
+        for key in (
+            "total_packets", "top_talkers",
+            "protocol_distribution", "anomalies",
+        ):
             assert key in result, f"Eksik anahtar: {key}"
 
     def test_total_packets_count(self):
@@ -88,8 +95,12 @@ class TestTrafficAnalyzerBasic:
         )
         result = TrafficAnalyzer(packets).analyze()
         dist = result["protocol_distribution"]
-        assert dist.get("HTTP") == 5, f"HTTP sayısı 5 olmalı, alınan: {dist.get('HTTP')}"
-        assert dist.get("DNS") == 3, f"DNS sayısı 3 olmalı, alınan: {dist.get('DNS')}"
+        assert dist.get("HTTP") == 5, (
+            f"HTTP sayısı 5 olmalı, alınan: {dist.get('HTTP')}"
+        )
+        assert dist.get("DNS") == 3, (
+            f"DNS sayısı 3 olmalı, alınan: {dist.get('DNS')}"
+        )
 
     def test_top_talkers_structure(self):
         """top_talkers listesi dict'lerden oluşmalı ve ip/count/location içermeli."""
@@ -100,7 +111,9 @@ class TestTrafficAnalyzerBasic:
         assert len(talkers) > 0
         for t in talkers:
             for field in ("ip", "count", "location"):
-                assert field in t, f"top_talkers dict'inde eksik alan: {field}"
+                assert field in t, (
+                    f"top_talkers dict'inde eksik alan: {field}"
+                )
 
 
 class TestAnomalyDetection:
@@ -111,7 +124,8 @@ class TestAnomalyDetection:
         packets = [_make_packet("10.0.0.1", dst_port=80, protocol="HTTP")]
         result = TrafficAnalyzer(packets).analyze()
         assert result["anomalies"] == [], (
-            f"Normal trafik için anomali beklenmez, alınan: {result['anomalies']}"
+            f"Normal trafik için anomali beklenmez, "
+            f"alınan: {result['anomalies']}"
         )
 
     def test_port_scan_detected(self):
@@ -130,7 +144,8 @@ class TestAnomalyDetection:
         result = TrafficAnalyzer(packets).analyze()
         anomaly_types = [a["type"] for a in result["anomalies"]]
         assert "PORT_SCAN" in anomaly_types, (
-            f"PORT_SCAN beklendi fakat bulunamadı. Anomaliler: {anomaly_types}"
+            f"PORT_SCAN beklendi fakat bulunamadı. "
+            f"Anomaliler: {anomaly_types}"
         )
 
     def test_port_scan_source_ip_correct(self):
@@ -147,7 +162,9 @@ class TestAnomalyDetection:
         port_scan_anomalies = [
             a for a in result["anomalies"] if a["type"] == "PORT_SCAN"
         ]
-        assert any(a["source_ip"] == attacker_ip for a in port_scan_anomalies), (
+        assert any(
+            a["source_ip"] == attacker_ip for a in port_scan_anomalies
+        ), (
             f"Saldırgan IP {attacker_ip} raporlanmadı. "
             f"Anomaliler: {port_scan_anomalies}"
         )
@@ -222,8 +239,7 @@ class TestAnomalyDetection:
         )
 
     def test_multiple_anomalies_from_same_ip(self):
-        """
-        Aynı IP hem port scan hem SYN flood yapabilmeli → her iki anomali de listede."""
+        """Aynı IP hem port scan hem SYN flood yapabilmeli → her iki anomali de listede."""
         from core import config as Ayarlar
 
         ip = "198.51.100.1"

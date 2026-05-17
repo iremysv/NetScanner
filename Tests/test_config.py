@@ -4,14 +4,15 @@ Tests/test_config.py
 Unit testler: core.config modülünün doğru yüklendiğini ve
 eşik değerlerinin beklenen tipte/aralıkta olduğunu doğrular.
 """
-import sys
 import os
+import sys
 
-# Proje kök dizinini Python path'ine ekle (pytest'in modülleri bulabilmesi için)
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Proje kök dizinini Python path'ine ekle
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
-import pytest
-from core import config as Ayarlar
+from core import config as Ayarlar  # noqa: E402
 
 
 class TestConfigValues:
@@ -68,7 +69,10 @@ class TestConfigValues:
     def test_rapor_dizini_exists(self):
         """RAPOR_DIZINI tanımlı ve boş olmamalıdır."""
         assert hasattr(Ayarlar, "RAPOR_DIZINI")
-        assert isinstance(Ayarlar.RAPOR_DIZINI, str) and len(Ayarlar.RAPOR_DIZINI) > 0
+        assert (
+            isinstance(Ayarlar.RAPOR_DIZINI, str)
+            and len(Ayarlar.RAPOR_DIZINI) > 0
+        )
 
     def test_trafik_rapor_dizini_exists(self):
         """TRAFIK_RAPOR_DIZINI tanımlı ve boş olmamalıdır."""

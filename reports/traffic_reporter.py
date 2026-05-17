@@ -7,14 +7,22 @@ from core import config as Ayarlar
 
 def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
     tarih = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    dizin = getattr(Ayarlar, "TRAFIK_RAPOR_DIZINI", "taramalar/traffic_reports")
+    dizin = getattr(
+        Ayarlar, "TRAFIK_RAPOR_DIZINI", "taramalar/traffic_reports"
+    )
 
     if not os.path.exists(dizin):
         os.makedirs(dizin)
 
-    dosya_adi_txt = os.path.join(dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.txt")
-    dosya_adi_json = os.path.join(dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.json")
-    dosya_adi_html = os.path.join(dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.html")
+    dosya_adi_txt = os.path.join(
+        dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.txt"
+    )
+    dosya_adi_json = os.path.join(
+        dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.json"
+    )
+    dosya_adi_html = os.path.join(
+        dizin, f"traffic_rapor_{rapor_adi_onek}_{tarih}.html"
+    )
 
     # 1. JSON Formatında Kaydetme
     with open(dosya_adi_json, "w", encoding="utf-8") as f:
@@ -24,7 +32,10 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
     with open(dosya_adi_txt, "w", encoding="utf-8") as f:
         f.write("--- NETSCANNER TRAFİK ANALİZ RAPORU ---\n")
         f.write(f"Tarih: {tarih}\n")
-        f.write(f"Toplam İncelenen Paket: {sonuclar.get('total_packets', 0)}\n")
+        f.write(
+            f"Toplam İncelenen Paket: "
+            f"{sonuclar.get('total_packets', 0)}\n"
+        )
         f.write("-" * 40 + "\n\n")
 
         f.write("[PROTOKOL DAĞILIMI]\n")
@@ -37,7 +48,8 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
         top_talkers = sonuclar.get("top_talkers", [])
         for talker in top_talkers:
             f.write(
-                f"  - {talker['ip']}: {talker['count']} paket [Konum: {talker['location']}]\n"
+                f"  - {talker['ip']}: {talker['count']} paket "
+                f"[Konum: {talker['location']}]\n"
             )
         f.write("\n")
 
@@ -49,7 +61,8 @@ def trafik_raporu_olustur(rapor_adi_onek: str, sonuclar: dict) -> None:
             for anomali in anomaliler:
                 f.write(
                     f"  ! DİKKAT [{anomali.get('type')}]: "
-                    f"IP: {anomali.get('source_ip')} -> {anomali.get('details')}\n"
+                    f"IP: {anomali.get('source_ip')} "
+                    f"-> {anomali.get('details')}\n"
                 )
         f.write("\n" + "-" * 40 + "\n")
 
@@ -75,17 +88,28 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #f4f7f6; color: #333; margin: 0; padding: 20px;
     }
-    h1, h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+    h1, h2 {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+    }
     .container {
         max-width: 900px; margin: auto; background: #fff;
-        padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px; border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     .summary-box {
         background: #e8f4f8; padding: 15px;
         border-left: 5px solid #3498db; margin-bottom: 20px;
     }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    table {
+        width: 100%; border-collapse: collapse;
+        margin-top: 10px; margin-bottom: 20px;
+    }
+    th, td {
+        padding: 12px; text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
     th { background-color: #3498db; color: white; }
     tr:hover { background-color: #f1f1f1; }
     .alert {
@@ -103,7 +127,8 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
     top_talkers = sonuclar.get("top_talkers", [])
     talkers_html = (
         "<table><tr>"
-        "<th>Sıra</th><th>IP Adresi</th><th>Paket Sayısı</th><th>Coğrafi Konum (OSINT)</th>"
+        "<th>Sıra</th><th>IP Adresi</th>"
+        "<th>Paket Sayısı</th><th>Coğrafi Konum (OSINT)</th>"
         "</tr>"
     )
     for i, t in enumerate(top_talkers):
@@ -117,7 +142,10 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
     protocol_dist = sonuclar.get("protocol_distribution", {})
     proto_html = "<table><tr><th>Protokol</th><th>Paket Sayısı</th></tr>"
     for p, c in protocol_dist.items():
-        proto_html += f"<tr><td><span class='badge'>{p}</span></td><td>{c}</td></tr>"
+        proto_html += (
+            f"<tr><td><span class='badge'>{p}</span></td>"
+            f"<td>{c}</td></tr>"
+        )
     proto_html += "</table>"
 
     # Anomaliler Listesi
@@ -150,7 +178,8 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
             <h1>🛡️ NetScanner Gelişmiş Ağ Analiz Raporu</h1>
             <div class="summary-box">
                 <strong>Oluşturulma Tarihi:</strong> {tarih} <br>
-                <strong>İncelenen Toplam Paket:</strong> {sonuclar.get('total_packets', 0)}
+                <strong>İncelenen Toplam Paket:</strong>
+                {sonuclar.get('total_packets', 0)}
             </div>
 
             <h2>🚨 Tespit Edilen Anomaliler ve Tehditler</h2>
@@ -161,8 +190,10 @@ def _generate_html(tarih: str, sonuclar: dict) -> str:
 
             <h2>📊 Protokol Dağılımı</h2>
             {proto_html}
-            <p style="text-align: center; color: #7f8c8d; font-size: 12px; margin-top: 40px;">
-                Bu rapor NetScanner Packet Engine tarafından otomatik üretilmiştir.
+            <p style="text-align: center; color: #7f8c8d;
+                font-size: 12px; margin-top: 40px;">
+                Bu rapor NetScanner Packet Engine tarafından
+                otomatik üretilmiştir.
             </p>
         </div>
     </body>
