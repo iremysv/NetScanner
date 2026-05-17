@@ -65,8 +65,9 @@ def ana_menu() -> None:
                 trafik_raporu_olustur("live_sniff", sonuclar)
             elif secim == "9":
                 print(
-                    "\n[*] Web Arayüzü Başlatılıyor... Tarayıcınızdan "
-                    "http://localhost:8000 adresine gidin. Çıkmak için CTRL+C yapın."
+                    "\n[*] Web Arayüzü Başlatılıyor... "
+                    "Tarayıcınızdan http://localhost:8000 "
+                    "adresine gidin. Çıkmak için CTRL+C yapın."
                 )
                 try:
                     import uvicorn
