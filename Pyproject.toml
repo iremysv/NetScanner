@@ -35,6 +35,7 @@ dependencies = [
 dev = [
     # --- Test ---
     "pytest>=9.0",
+    "pytest-cov>=7.0",
     # --- Kod Kalitesi ---
     "mypy>=2.1",
     "black>=26.0",
@@ -47,3 +48,12 @@ testpaths = ["Tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["modules", "core", "reports"]
+omit = ["venv/*", "Tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 40
