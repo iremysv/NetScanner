@@ -11,6 +11,7 @@ from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.live_sniffer import LiveSniffer
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
 from reports.traffic_reporter import trafik_raporu_olustur
+from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 
 
 def ana_menu() -> None:
@@ -50,6 +51,9 @@ def ana_menu() -> None:
                     analyzer = TrafficAnalyzer(paketler)
                     sonuclar = analyzer.analyze()
                     trafik_raporu_olustur("pcap_analiz", sonuclar)
+                    markdown_guvenlik_raporu_olustur(
+                        hedef=dosya_yolu, trafik_sonuclar=sonuclar
+                    )
             elif secim == "8":
                 print(
                     "\n[*] Canlı Ağ İzleme Başlatılıyor..."
@@ -63,6 +67,9 @@ def ana_menu() -> None:
                 analyzer = TrafficAnalyzer(paketler)
                 sonuclar = analyzer.analyze()
                 trafik_raporu_olustur("live_sniff", sonuclar)
+                markdown_guvenlik_raporu_olustur(
+                    hedef="Canli_Ag", trafik_sonuclar=sonuclar
+                )
             elif secim == "9":
                 print(
                     "\n[*] Web Arayüzü Başlatılıyor... "
@@ -146,6 +153,9 @@ def main():
             analyzer = TrafficAnalyzer(paketler)
             sonuclar = analyzer.analyze()
             trafik_raporu_olustur("cli_pcap", sonuclar)
+            markdown_guvenlik_raporu_olustur(
+                hedef=args.pcap, trafik_sonuclar=sonuclar
+            )
     elif args.test_nmap and args.target:
         print(
             f"[*] {args.target} için entegrasyon testi başlatılıyor..."
