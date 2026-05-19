@@ -150,9 +150,9 @@ class TestZafiyetTara:
 
     def test_returns_stdout_on_success(self, monkeypatch):
         """Başarılı taramada nmap stdout döndürülmelidir."""
+        nmap_out = "PORT   STATE SERVICE\n80/tcp open  http"
         mock_result = subprocess.CompletedProcess(
-            args=[], returncode=0, stdout="PORT   STATE SERVICE\n80/tcp open  http",
-            stderr=""
+            args=[], returncode=0, stdout=nmap_out, stderr=""
         )
         monkeypatch.setattr(subprocess, "run", lambda *a, **kw: mock_result)
         result = zafiyet_tara("192.168.1.1")
