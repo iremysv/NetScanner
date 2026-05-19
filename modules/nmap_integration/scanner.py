@@ -3,6 +3,7 @@ import subprocess
 import re
 from modules.nmap_integration.analyzer import analiz_et
 from reports.reporter import rapor_yaz
+from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 
 
 def nmap_calistir(
@@ -26,6 +27,13 @@ def nmap_calistir(
                 "analiz motoruna iletiliyor...\n"
             )
             analiz_et(acik_portlar)
+
+        # 3. Markdown Güvenlik Raporu Oluştur
+        markdown_guvenlik_raporu_olustur(
+            hedef=hedef,
+            acik_portlar=acik_portlar,
+            nmap_ciktisi=sonuc.stdout
+        )
 
         print("[!] Tarama işlemi tamamlandı.")
         return sonuc.stdout, dosya_adi
