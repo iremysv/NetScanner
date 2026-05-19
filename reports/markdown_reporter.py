@@ -171,7 +171,7 @@ def markdown_guvenlik_raporu_olustur(
     lines.append("## Hedef Bilgisi\n")
     lines.append(f"- **URL/IP:** `{hedef}`")
     lines.append(f"- **Tarih:** {tarih}")
-    lines.append(f"- **Araçlar:** NetScanner (Nmap + Packet Engine)")
+    lines.append("- **Araçlar:** NetScanner (Nmap + Packet Engine)")
     lines.append("")
 
     # Özet sayaç

@@ -23,6 +23,7 @@ from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
 from modules.packet_engine.live_sniffer import LiveSniffer
 from reports.traffic_reporter import trafik_raporu_olustur
+from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 
 app = FastAPI(title="NetScanner Web Dashboard")
 
@@ -231,6 +232,9 @@ async def stop_sniffing():
     analyzer_instance = TrafficAnalyzer(paketler)
     sonuclar = analyzer_instance.analyze()
     trafik_raporu_olustur("web_live_sniff", sonuclar)
+    markdown_guvenlik_raporu_olustur(
+        hedef="Canli_Ag", trafik_sonuclar=sonuclar
+    )
 
     await manager.broadcast(
         {
@@ -297,6 +301,9 @@ async def upload_pcap(file: UploadFile = File(...)):
                 }
 
             trafik_raporu_olustur("web_pcap", sonuclar)
+            markdown_guvenlik_raporu_olustur(
+                hedef=filename, trafik_sonuclar=sonuclar
+            )
             await manager.broadcast(
                 {
                     "type": "success",
