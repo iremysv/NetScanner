@@ -5,7 +5,7 @@
 # 🛡️ NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-38%20passed-brightgreen?style=flat-square&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-44%25-yellow?style=flat-square) ![Flake8](https://img.shields.io/badge/flake8-0%20errors-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-95%20passed-brightgreen?style=flat-square&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-73%25-brightgreen?style=flat-square) ![Flake8](https://img.shields.io/badge/flake8-0%20errors-brightgreen?style=flat-square) ![mypy](https://img.shields.io/badge/mypy-0%20errors-brightgreen?style=flat-square)
 
 ### 🎬 Sistem Demosu
 ![NetScanner Dashboard Demo](Demo/netscanner_demo.gif)
