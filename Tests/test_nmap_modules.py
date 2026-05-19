@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Tests/test_nmap_modules.py
-Unit testler: modules.nmap_integration.analyzer ve
-modules.nmap_integration.vulnerability modüllerini doğrular.
+Unit testler: modules.nmap_integration.analyzer,
+modules.nmap_integration.vulnerability ve
+modules.nmap_integration.scanner modüllerini doğrular.
 Gerçek ağ/nmap çağrıları monkeypatch ile devre dışı bırakılır.
 """
 import os
@@ -19,6 +20,7 @@ from modules.nmap_integration.analyzer import analiz_et  # noqa: E402
 from modules.nmap_integration.vulnerability import (  # noqa: E402
     zafiyet_tara,
 )
+from modules.nmap_integration.scanner import nmap_calistir  # noqa: E402
 
 
 # ===========================================================================
@@ -205,3 +207,98 @@ class TestZafiyetTara:
         zafiyet_tara("10.0.0.1")
         cmd_str = " ".join(called_with["cmd"])
         assert "vuln" in cmd_str
+
+
+# ===========================================================================
+# nmap_calistir (nmap_integration.scanner) testleri
+# ===========================================================================
+
+
+class TestNmapCalistir:
+    """nmap_calistir fonksiyonunun dönüş değeri ve hata yönetimini doğrular."""
+
+    def _mock_run_success(self, monkeypatch, tmp_path, stdout_text):
+        """Başarılı subprocess.run ve rapor dizini mocklayan yardımcı."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(Ayarlar, "RAPOR_DIZINI", str(tmp_path))
+
+        mock_result = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout=stdout_text, stderr=""
+        )
+        monkeypatch.setattr(subprocess, "run", lambda *a, **kw: mock_result)
+
+    def test_returns_tuple_on_success(self, monkeypatch, tmp_path):
+        """Başarılı taramada (str, str) tuple döndürmelidir."""
+        self._mock_run_success(monkeypatch, tmp_path, "nmap output")
+        result = nmap_calistir(["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test")
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+        assert isinstance(result[0], str)
+        assert isinstance(result[1], str)
+
+    def test_returns_stdout_content(self, monkeypatch, tmp_path):
+        """Döndürülen tuple'ın ilk elemanı nmap stdout'u olmalıdır."""
+        self._mock_run_success(monkeypatch, tmp_path, "PORT_SCAN_RESULT")
+        stdout, _ = nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
+        assert "PORT_SCAN_RESULT" in stdout
+
+    def test_creates_report_file(self, monkeypatch, tmp_path):
+        """Tarama sonucu bir rapor dosyası oluşturmalıdır."""
+        self._mock_run_success(monkeypatch, tmp_path, "output")
+        _, rapor_yolu = nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
+        assert os.path.isfile(rapor_yolu)
+
+    def test_returns_none_tuple_on_failure(self, monkeypatch, tmp_path):
+        """subprocess hatası durumunda (None, None) döndürmelidir."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(Ayarlar, "RAPOR_DIZINI", str(tmp_path))
+
+        def mock_fail(*args, **kwargs):
+            raise subprocess.CalledProcessError(1, "nmap", stderr="err")
+
+        monkeypatch.setattr(subprocess, "run", mock_fail)
+        result = nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
+        assert result == (None, None)
+
+    def test_returns_none_on_unexpected_error(self, monkeypatch, tmp_path):
+        """Beklenmedik exception durumunda (None, None) döndürmelidir."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(Ayarlar, "RAPOR_DIZINI", str(tmp_path))
+
+        def mock_crash(*args, **kwargs):
+            raise RuntimeError("Unexpected")
+
+        monkeypatch.setattr(subprocess, "run", mock_crash)
+        result = nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
+        assert result == (None, None)
+
+    def test_open_port_triggers_analyzer(self, monkeypatch, tmp_path, capsys):
+        """Açık port tespit edilince analiz motoru tetiklenmelidir."""
+        stdout_with_ports = (
+            "80/tcp open http\n"
+            "22/tcp open ssh\n"
+        )
+        self._mock_run_success(monkeypatch, tmp_path, stdout_with_ports)
+        nmap_calistir(["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test")
+        captured = capsys.readouterr()
+        # analiz_et çağrıldıysa HTTP veya SSH çıktısı olmalı
+        assert "HTTP" in captured.out or "SSH" in captured.out
+
+    def test_no_open_ports_skips_analyzer(self, monkeypatch, tmp_path, capsys):
+        """Açık port yoksa analiz motoru çıktısı olmamalıdır."""
+        self._mock_run_success(monkeypatch, tmp_path, "No open ports found.")
+        nmap_calistir(["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test")
+        captured = capsys.readouterr()
+        # analiz_et çağrılmadıysa GÜVENLİK başlığı görünmemeli
+        assert "GÜVENLİK ANALİZİ" not in captured.out
