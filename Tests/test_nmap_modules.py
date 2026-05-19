@@ -10,8 +10,6 @@ import os
 import sys
 import subprocess
 
-import pytest
-
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )
@@ -231,7 +229,9 @@ class TestNmapCalistir:
     def test_returns_tuple_on_success(self, monkeypatch, tmp_path):
         """Başarılı taramada (str, str) tuple döndürmelidir."""
         self._mock_run_success(monkeypatch, tmp_path, "nmap output")
-        result = nmap_calistir(["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test")
+        result = nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], str)
@@ -290,7 +290,9 @@ class TestNmapCalistir:
             "22/tcp open ssh\n"
         )
         self._mock_run_success(monkeypatch, tmp_path, stdout_with_ports)
-        nmap_calistir(["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test")
+        nmap_calistir(
+            ["nmap", "-F", "127.0.0.1"], "127.0.0.1", "test"
+        )
         captured = capsys.readouterr()
         # analiz_et çağrıldıysa HTTP veya SSH çıktısı olmalı
         assert "HTTP" in captured.out or "SSH" in captured.out

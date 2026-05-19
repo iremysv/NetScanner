@@ -7,7 +7,6 @@ dosya oluşturma, içerik doğruluğu ve hata toleransını doğrular.
 import json
 import os
 import sys
-import tempfile
 
 import pytest
 
