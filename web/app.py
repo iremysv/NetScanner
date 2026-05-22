@@ -233,7 +233,9 @@ async def stop_sniffing():
     sonuclar = analyzer_instance.analyze()
     trafik_raporu_olustur("web_live_sniff", sonuclar)
     markdown_guvenlik_raporu_olustur(
-        hedef="Canli_Ag", trafik_sonuclar=sonuclar
+        hedef="Canli_Ag",
+        trafik_sonuclar=sonuclar,
+        connection_map=sonuclar.get("connection_map"),
     )
 
     await manager.broadcast(
@@ -302,7 +304,9 @@ async def upload_pcap(file: UploadFile = File(...)):
 
             trafik_raporu_olustur("web_pcap", sonuclar)
             markdown_guvenlik_raporu_olustur(
-                hedef=filename, trafik_sonuclar=sonuclar
+                hedef=filename,
+                trafik_sonuclar=sonuclar,
+                connection_map=sonuclar.get("connection_map"),
             )
             await manager.broadcast(
                 {
