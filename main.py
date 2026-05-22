@@ -52,7 +52,9 @@ def ana_menu() -> None:
                     sonuclar = analyzer.analyze()
                     trafik_raporu_olustur("pcap_analiz", sonuclar)
                     markdown_guvenlik_raporu_olustur(
-                        hedef=dosya_yolu, trafik_sonuclar=sonuclar
+                        hedef=dosya_yolu,
+                        trafik_sonuclar=sonuclar,
+                        connection_map=sonuclar.get("connection_map"),
                     )
             elif secim == "8":
                 print(
@@ -68,7 +70,9 @@ def ana_menu() -> None:
                 sonuclar = analyzer.analyze()
                 trafik_raporu_olustur("live_sniff", sonuclar)
                 markdown_guvenlik_raporu_olustur(
-                    hedef="Canli_Ag", trafik_sonuclar=sonuclar
+                    hedef="Canli_Ag",
+                    trafik_sonuclar=sonuclar,
+                    connection_map=sonuclar.get("connection_map"),
                 )
             elif secim == "9":
                 print(
@@ -121,32 +125,82 @@ def main():
     parser = argparse.ArgumentParser(
         description=(
             "NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu"
-        )
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Örnekler:\n"
+            "  sudo python3 main.py                          # İnteraktif menü\n"
+            "  sudo python3 main.py --pcap trafik.pcap       # PCAP analizi\n"
+            "  sudo python3 main.py --nmap-quick 192.168.1.1 # Hızlı Nmap\n"
+            "  sudo python3 main.py --nmap-vuln 10.0.0.1    # Zafiyet tarama\n"
+            "  sudo python3 main.py --live                   # Canlı izleme\n"
+            "  python3 main.py --web                         # Web arayüzü\n"
+        ),
     )
-    # PCAP okuma argümanı
+
+    # --- Paket Motoru Argümanları ---
     parser.add_argument(
-        "-p", "--pcap", help="Analiz edilecek .pcap dosyasının yolu"
+        "-p", "--pcap",
+        metavar="DOSYA",
+        help="Analiz edilecek .pcap/.pcapng dosyasının yolu",
     )
-    parser.add_argument("-t", "--target", help="Hedef IP veya Domain adresi")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Canlı ağ trafiğini dinle ve anomali tespiti yap (root gerekir)",
+    )
+
+    # --- Nmap Entegrasyonu Argümanları ---
+    nmap_group = parser.add_argument_group("Nmap Tarama Argümanları")
+    nmap_group.add_argument(
+        "--nmap-quick",
+        metavar="HEDEF",
+        help="Hızlı Nmap taraması (-F, Top 100 port)",
+    )
+    nmap_group.add_argument(
+        "--nmap-service",
+        metavar="HEDEF",
+        help="Servis & versiyon tespiti (-sV)",
+    )
+    nmap_group.add_argument(
+        "--nmap-full",
+        metavar="HEDEF",
+        help="Agresif tam tarama (-A) — root gerekir",
+    )
+    nmap_group.add_argument(
+        "--nmap-vuln",
+        metavar="HEDEF",
+        help="NSE zafiyet taraması (--script=vuln)",
+    )
+
+    # --- Eski / Uyumluluk Argümanları ---
+    parser.add_argument(
+        "-t", "--target",
+        metavar="HEDEF",
+        help="(Eski) Hedef IP veya Domain adresi",
+    )
     parser.add_argument(
         "--test-nmap",
         action="store_true",
-        help="Nmap entegrasyonunu test et (Hızlı Tarama)",
+        help="(Eski) Nmap entegrasyonunu test et; --target ile kullanılır",
     )
     parser.add_argument(
         "--web",
         action="store_true",
-        help="Web arayüzünü (Dashboard) başlatır",
+        help="Web arayüzünü (Dashboard) başlatır (http://localhost:8000)",
     )
 
     args = parser.parse_args()
 
+    # ------------------------------------------------------------------ #
+    # Argüman Yönlendirme                                                  #
+    # ------------------------------------------------------------------ #
     if len(sys.argv) == 1:
+        # Argümansız çalıştırıldı → interaktif menü
         ana_menu()
+
     elif args.pcap:
-        print(
-            f"[*] {args.pcap} dosyası okunuyor ve analiz ediliyor..."
-        )
+        print(f"[*] {args.pcap} dosyası okunuyor ve analiz ediliyor...")
         reader = PcapReader(args.pcap)
         if reader.read_pcap():
             paketler = reader.parse_packets()
@@ -154,16 +208,64 @@ def main():
             sonuclar = analyzer.analyze()
             trafik_raporu_olustur("cli_pcap", sonuclar)
             markdown_guvenlik_raporu_olustur(
-                hedef=args.pcap, trafik_sonuclar=sonuclar
+                hedef=args.pcap,
+                trafik_sonuclar=sonuclar,
+                connection_map=sonuclar.get("connection_map"),
             )
-    elif args.test_nmap and args.target:
+
+    elif args.live:
         print(
-            f"[*] {args.target} için entegrasyon testi başlatılıyor..."
+            "[*] Canlı Ağ İzleme Başlatılıyor..."
+            " (Durdurmak için ENTER'a basın)"
         )
+        sniffer = LiveSniffer()
+        sniffer.start_sniffing()
+        input()
+        sniffer.stop_sniffing()
+        paketler = sniffer.get_parsed_packets()
+        analyzer = TrafficAnalyzer(paketler)
+        sonuclar = analyzer.analyze()
+        trafik_raporu_olustur("cli_live", sonuclar)
+        markdown_guvenlik_raporu_olustur(
+            hedef="Canli_Ag",
+            trafik_sonuclar=sonuclar,
+            connection_map=sonuclar.get("connection_map"),
+        )
+
+    elif args.nmap_quick:
+        hedef = args.nmap_quick
+        hiz = Ayarlar.TARAMA_HIZI
+        print(f"[*] {hedef} için hızlı Nmap taraması başlatılıyor...")
+        nmap_calistir(["nmap", hiz, "-F", hedef], hedef, "hizli_tarama")
+
+    elif args.nmap_service:
+        hedef = args.nmap_service
+        hiz = Ayarlar.TARAMA_HIZI
+        print(f"[*] {hedef} için servis/versiyon tespiti başlatılıyor...")
+        nmap_calistir(["nmap", hiz, "-sV", hedef], hedef, "servis_analizi")
+
+    elif args.nmap_full:
+        hedef = args.nmap_full
+        hiz = Ayarlar.TARAMA_HIZI
+        print(f"[*] {hedef} için agresif tarama başlatılıyor...")
+        nmap_calistir(
+            ["sudo", "nmap", hiz, "-A", hedef], hedef, "agresif_tarama"
+        )
+
+    elif args.nmap_vuln:
+        hedef = args.nmap_vuln
+        print(f"[*] {hedef} için zafiyet taraması başlatılıyor...")
+        sonuc = zafiyet_tara(hedef)
+        rapor_yaz(f"{hedef}_zafiyet", sonuc)
+        print(sonuc)
+
+    elif args.test_nmap and args.target:
+        print(f"[*] {args.target} için entegrasyon testi başlatılıyor...")
         hiz = Ayarlar.TARAMA_HIZI
         nmap_calistir(
             ["nmap", hiz, "-F", args.target], args.target, "test_tarama"
         )
+
     elif args.web:
         print(
             "[*] Web Arayüzü Başlatılıyor... "
@@ -179,6 +281,7 @@ def main():
             )
         except ImportError:
             print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
+
     else:
         parser.print_help()
 

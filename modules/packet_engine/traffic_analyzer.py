@@ -30,6 +30,11 @@ class TrafficAnalyzer:
         self.suspicious_dns: list[tuple[str, str]] = []
         self.suspicious_http: list[tuple[str, str]] = []
 
+        # Bağlantı Haritası: src_ip → {dst_ip: {port_set}}
+        self.connection_map: defaultdict[
+            str, defaultdict[str, set[int]]
+        ] = defaultdict(lambda: defaultdict(set))
+
         # GeoIP Önbelleği (Gereksiz istekleri engellemek için)
         self.geoip_cache: dict[str, str] = {}
 
@@ -64,9 +69,10 @@ class TrafficAnalyzer:
             self.ip_frequencies[src_ip] += 1
             self.protocol_distribution[protocol] += 1
 
-            # Port Scan Verisi
-            if dst_port:
+            # Port Scan + Bağlantı Haritası Verisi
+            if dst_port and dst_ip:
                 self.ip_to_ports[src_ip].add(dst_port)
+                self.connection_map[src_ip][dst_ip].add(dst_port)
 
             # DNS Tunneling Verisi
             if protocol == "DNS":
@@ -102,6 +108,7 @@ class TrafficAnalyzer:
             "top_talkers": top_talkers_with_geo,
             "protocol_distribution": dict(self.protocol_distribution),
             "anomalies": self._detect_anomalies(),
+            "connection_map": self._build_connection_map(),
         }
 
         logger.info("Trafik analizi tamamlandı.")
@@ -150,6 +157,27 @@ class TrafficAnalyzer:
             loc = self._get_geoip(ip)
             enriched.append({"ip": ip, "count": count, "location": loc})
         return enriched
+
+    def _build_connection_map(self) -> list[dict]:
+        """
+        Ağ bağlantı haritasını oluşturur.
+        Her kaynak IP'nin hangi hedef IP ve portlara bağlandığını döndürür.
+        Örnek çıktı:
+          [{"src": "10.0.0.1", "dst": "8.8.8.8",
+            "ports": [53, 80], "count": 12}, ...]
+        """
+        result: list[dict] = []
+        for src_ip, dst_map in self.connection_map.items():
+            for dst_ip, ports in dst_map.items():
+                result.append({
+                    "src": src_ip,
+                    "dst": dst_ip,
+                    "ports": sorted(ports),
+                    "count": self.ip_frequencies.get(src_ip, 0),
+                })
+        # En çok paket gönderen kaynaklardan başla
+        result.sort(key=lambda x: x["count"], reverse=True)
+        return result
 
     def _detect_anomalies(self) -> list:
         anomalies = []

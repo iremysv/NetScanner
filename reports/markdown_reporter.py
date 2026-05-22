@@ -80,6 +80,7 @@ def markdown_guvenlik_raporu_olustur(
     trafik_sonuclar: dict | None = None,
     acik_portlar: list[str] | None = None,
     nmap_ciktisi: str | None = None,
+    connection_map: list[dict] | None = None,
 ) -> str:
     """
     Nmap ve trafik analizi bulgularını birleştirerek Markdown rapor üretir.
@@ -214,6 +215,35 @@ def markdown_guvenlik_raporu_olustur(
     lines.append(f"| ⚪ Bilgi  | {sayac['Bilgi']} |")
     lines.append(f"| **Toplam** | **{len(bulgular)}** |")
     lines.append("")
+
+    # --------------------------------------------------------------- #
+    # 4. Bağlantı Haritası (Connection Map)                           #
+    # --------------------------------------------------------------- #
+    lines.append("---\n")
+    lines.append("## 🗺️ Bağlantı Haritası\n")
+    if not connection_map:
+        lines.append(
+            "> Bağlantı haritası verisi bulunamadı "
+            "(yalnızca Nmap taraması yapıldıysa bu normaldir).\n"
+        )
+    else:
+        lines.append(
+            "| Kaynak IP | Hedef IP | Portlar | Paket Sayısı |"
+        )
+        lines.append("|-----------|----------|---------|-------------|")
+        # İlk 30 bağlantıyı göster (rapor şişmesini önle)
+        for entry in connection_map[:30]:
+            portlar_str = ", ".join(str(p) for p in entry.get("ports", []))
+            lines.append(
+                f"| `{entry['src']}` | `{entry['dst']}` "
+                f"| {portlar_str} | {entry['count']} |"
+            )
+        if len(connection_map) > 30:
+            lines.append(
+                f"| ... | *+{len(connection_map) - 30} daha* | | |"
+            )
+    lines.append("")
+
     lines.append("---")
     lines.append(
         "*Bu rapor NetScanner tarafından otomatik üretilmiştir. "

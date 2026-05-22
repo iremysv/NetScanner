@@ -261,3 +261,73 @@ class TestAnomalyDetection:
         anomaly_types = [a["type"] for a in result["anomalies"]]
         assert "PORT_SCAN" in anomaly_types
         assert "SYN_FLOOD_DDOS" in anomaly_types
+
+
+class TestConnectionMap:
+    """Bağlantı haritası (connection_map) çıktısını doğrulayan testler."""
+
+    def test_connection_map_key_in_results(self):
+        """analyze() çıktısı 'connection_map' anahtarını içermeli."""
+        packets = [_make_packet("10.0.0.1", dst_ip="8.8.8.8", dst_port=80)]
+        result = TrafficAnalyzer(packets).analyze()
+        assert "connection_map" in result, (
+            "analyze() çıktısında 'connection_map' anahtarı bulunamadı."
+        )
+
+    def test_connection_map_empty_on_no_packets(self):
+        """Paket listesi boşsa connection_map de boş olmalı."""
+        result = TrafficAnalyzer([]).analyze()
+        assert result == {}
+
+    def test_connection_map_structure(self):
+        """connection_map her eleman dict olmalı; src/dst/ports/count içermeli."""
+        packets = [_make_packet("10.0.0.1", dst_ip="8.8.8.8", dst_port=443)]
+        result = TrafficAnalyzer(packets).analyze()
+        cmap = result["connection_map"]
+        assert isinstance(cmap, list), "connection_map liste olmalı."
+        assert len(cmap) > 0
+        entry = cmap[0]
+        for field in ("src", "dst", "ports", "count"):
+            assert field in entry, f"connection_map dict'inde eksik alan: {field}"
+
+    def test_connection_map_ports_are_sorted(self):
+        """Portlar sıralı (artan) olmalı."""
+        packets = [
+            _make_packet("192.168.1.1", dst_ip="1.1.1.1", dst_port=p)
+            for p in [443, 80, 53, 22]
+        ]
+        result = TrafficAnalyzer(packets).analyze()
+        cmap = result["connection_map"]
+        assert len(cmap) > 0
+        ports = cmap[0]["ports"]
+        assert ports == sorted(ports), (
+            f"Portlar sıralı değil: {ports}"
+        )
+
+    def test_connection_map_multiple_destinations(self):
+        """Aynı src farklı dst'lere gidiyorsa hepsi haritada yer almalı."""
+        packets = [
+            _make_packet("172.16.0.1", dst_ip="8.8.8.8",   dst_port=53),
+            _make_packet("172.16.0.1", dst_ip="1.1.1.1",   dst_port=53),
+            _make_packet("172.16.0.1", dst_ip="192.0.2.1", dst_port=80),
+        ]
+        result = TrafficAnalyzer(packets).analyze()
+        cmap = result["connection_map"]
+        dst_ips = {e["dst"] for e in cmap if e["src"] == "172.16.0.1"}
+        assert "8.8.8.8"   in dst_ips
+        assert "1.1.1.1"   in dst_ips
+        assert "192.0.2.1" in dst_ips
+
+    def test_connection_map_count_matches_frequency(self):
+        """count değeri o src_ip'nin toplam paket sayısıyla eşleşmeli."""
+        src = "10.10.10.10"
+        packets = [
+            _make_packet(src, dst_ip="9.9.9.9", dst_port=80)
+            for _ in range(7)
+        ]
+        result = TrafficAnalyzer(packets).analyze()
+        cmap = result["connection_map"]
+        entry = next(e for e in cmap if e["src"] == src)
+        assert entry["count"] == 7, (
+            f"count 7 olmalı, alınan: {entry['count']}"
+        )

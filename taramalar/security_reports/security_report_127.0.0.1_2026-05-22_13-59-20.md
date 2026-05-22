@@ -3,7 +3,7 @@
 ## Hedef Bilgisi
 
 - **URL/IP:** `127.0.0.1`
-- **Tarih:** 2026-05-19 11:49:06
+- **Tarih:** 2026-05-22 13:59:20
 - **Araçlar:** NetScanner (Nmap + Packet Engine)
 
 ---
@@ -24,6 +24,13 @@
 | 🟢 Düşük  | 0 |
 | ⚪ Bilgi  | 0 |
 | **Toplam** | **0** |
+
+---
+
+## 🗺️ Bağlantı Haritası
+
+> Bağlantı haritası verisi bulunamadı (yalnızca Nmap taraması yapıldıysa bu normaldir).
+
 
 ---
 *Bu rapor NetScanner tarafından otomatik üretilmiştir. Bulgular manuel doğrulama gerektirebilir.*

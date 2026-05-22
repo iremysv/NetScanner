@@ -269,3 +269,133 @@ class TestGenerateHtml:
         """Anomali varsa alert sınıflı div oluşturulmalıdır."""
         result = _generate_html("2026-01-01", SAMPLE_SONUCLAR)
         assert "class='alert'" in result
+
+
+# ===========================================================================
+# markdown_guvenlik_raporu_olustur testleri
+# ===========================================================================
+
+from reports.markdown_reporter import (  # noqa: E402
+    markdown_guvenlik_raporu_olustur,
+)
+
+SAMPLE_CONNECTION_MAP = [
+    {"src": "10.0.0.1", "dst": "8.8.8.8",   "ports": [53, 80], "count": 15},
+    {"src": "10.0.0.2", "dst": "1.1.1.1",   "ports": [443],    "count": 8},
+]
+
+
+class TestMarkdownReporter:
+    """markdown_guvenlik_raporu_olustur fonksiyonunun çıktısını doğrular."""
+
+    def test_creates_markdown_file(self, tmp_path, monkeypatch):
+        """Fonksiyon geçerli bir .md dosyası oluşturmalıdır."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(hedef="192.168.1.1")
+        assert os.path.isfile(path)
+        assert path.endswith(".md")
+
+    def test_markdown_contains_target(self, tmp_path, monkeypatch):
+        """Markdown dosyası hedef IP'yi içermelidir."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(hedef="10.20.30.40")
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "10.20.30.40" in content
+
+    def test_markdown_has_connection_map_section(self, tmp_path, monkeypatch):
+        """Bağlantı haritası verilince raporda ilgili bölüm olmalıdır."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(
+            hedef="10.0.0.1",
+            connection_map=SAMPLE_CONNECTION_MAP,
+        )
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "Bağlantı Haritası" in content
+
+    def test_markdown_connection_map_shows_ips(self, tmp_path, monkeypatch):
+        """Bağlantı haritasındaki IP'ler markdown dosyasında görünmeli."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(
+            hedef="10.0.0.1",
+            connection_map=SAMPLE_CONNECTION_MAP,
+        )
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "8.8.8.8" in content
+        assert "1.1.1.1" in content
+
+    def test_markdown_no_connection_map_shows_notice(
+        self, tmp_path, monkeypatch
+    ):
+        """Bağlantı haritası verisi yoksa bilgilendirme mesajı olmalı."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(
+            hedef="10.0.0.1",
+            connection_map=None,
+        )
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "bulunamadı" in content
+
+    def test_markdown_connection_map_over_30_shows_ellipsis(
+        self, tmp_path, monkeypatch
+    ):
+        """30'dan fazla bağlantı varsa '... daha' gösterilmeli."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        large_map = [
+            {
+                "src": f"10.0.{i}.1",
+                "dst": "8.8.8.8",
+                "ports": [80],
+                "count": i,
+            }
+            for i in range(35)
+        ]
+        path = markdown_guvenlik_raporu_olustur(
+            hedef="10.0.0.1",
+            connection_map=large_map,
+        )
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "daha" in content
+
+    def test_markdown_summary_table_present(self, tmp_path, monkeypatch):
+        """Raporda özet tablosu (Kritik/Yüksek/Orta) yer almalıdır."""
+        import core.config as Ayarlar
+
+        monkeypatch.setattr(
+            Ayarlar, "MARKDOWN_RAPOR_DIZINI", str(tmp_path)
+        )
+        path = markdown_guvenlik_raporu_olustur(hedef="test_host")
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "Kritik" in content
+        assert "Yüksek" in content
+        assert "Toplam" in content
+
