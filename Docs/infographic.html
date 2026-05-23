@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetScanner | Görsel Ağ Güvenlik Rehberi</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(20, 26, 40, 0.65);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            
+            /* Renk Kodlaması */
+            --color-concept: #00f0ff;    /* Mavi: Kavram */
+            --color-scanner: #ffaa00;    /* Turuncu: Tarama / Tercüme */
+            --color-danger: #ff3366;     /* Kırmızı: Tehlike / Zafiyet */
+            --color-protect: #00ff66;    /* Yeşil: Korunma */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.03), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(255, 51, 102, 0.03), transparent 30%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 800px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #00f0ff, #ff3366);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Renk Açıklama Kartı */
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            padding: 16px 24px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-concept { background-color: var(--color-concept); box-shadow: 0 0 8px var(--color-concept); }
+        .legend-scanner { background-color: var(--color-scanner); box-shadow: 0 0 8px var(--color-scanner); }
+        .legend-danger { background-color: var(--color-danger); box-shadow: 0 0 8px var(--color-danger); }
+        .legend-protect { background-color: var(--color-protect); box-shadow: 0 0 8px var(--color-protect); }
+
+        /* Infographic Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+        }
+
+        @media (max-width: 1024px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Kart Stilleri */
+        .card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px 24px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Kart Numarası */
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 800;
+            opacity: 0.15;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover .card-number {
+            opacity: 0.6;
+        }
+
+        /* Kart İkonu */
+        .card-icon {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            width: fit-content;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Kart Başlığı */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        /* Kart Açıklaması */
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        /* Dedektif Analojisi Kutusu */
+        .detective-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            border-left: 3px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Renk Kodlama Sınıfları */
+        .card.concept {
+            border-top: 4px solid var(--color-concept);
+        }
+        .card.concept .card-icon, .card.concept .card-title, .card.concept .card-number {
+            color: var(--color-concept);
+        }
+        .card.concept:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+        .card.concept .detective-box {
+            border-left-color: var(--color-concept);
+            color: #c8f5ff;
+        }
+
+        .card.scanner {
+            border-top: 4px solid var(--color-scanner);
+        }
+        .card.scanner .card-icon, .card.scanner .card-title, .card.scanner .card-number {
+            color: var(--color-scanner);
+        }
+        .card.scanner:hover {
+            box-shadow: 0 0 25px rgba(255, 170, 0, 0.15);
+            border-color: rgba(255, 170, 0, 0.3);
+        }
+        .card.scanner .detective-box {
+            border-left-color: var(--color-scanner);
+            color: #ffecc8;
+        }
+
+        .card.danger {
+            border-top: 4px solid var(--color-danger);
+        }
+        .card.danger .card-icon, .card.danger .card-title, .card.danger .card-number {
+            color: var(--color-danger);
+        }
+        .card.danger:hover {
+            box-shadow: 0 0 25px rgba(255, 51, 102, 0.15);
+            border-color: rgba(255, 51, 102, 0.3);
+        }
+        .card.danger .detective-box {
+            border-left-color: var(--color-danger);
+            color: #ffd2dc;
+        }
+
+        .card.protect {
+            border-top: 4px solid var(--color-protect);
+        }
+        .card.protect .card-icon, .card.protect .card-title, .card.protect .card-number {
+            color: var(--color-protect);
+        }
+        .card.protect:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.15);
+            border-color: rgba(0, 255, 102, 0.3);
+        }
+        .card.protect .detective-box {
+            border-left-color: var(--color-protect);
+            color: #d2ffd9;
+        }
+
+        /* Yön Okları (Flow Arrows) */
+        .flow-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            grid-column: span 4;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .flow-line::before, .flow-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border-color), transparent);
+            margin: 0 20px;
+        }
+
+        .flow-indicator {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-indicator i {
+            animation: bounceRight 1.5s infinite;
+        }
+
+        @keyframes bounceRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--color-concept);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📖 Nasıl Çalışır? Ağ Güvenlik Görsel Rehberi</h1>
+        <p>Ağ paketlerinin toplanmasından zafiyetlerin tespitine ve engelleme kurallarına kadar geçen tüm siber dedektiflik sürecini renk kodlu adımlarla inceleyin.</p>
+    </header>
+
+    <div class="color-legend">
+        <div class="legend-item"><div class="legend-color legend-concept"></div> Mavi: Temel Kavram</div>
+        <div class="legend-item"><div class="legend-color legend-scanner"></div> Turuncu: Tarama / Tercüme</div>
+        <div class="legend-item"><div class="legend-color legend-danger"></div> Kırmızı: Tehlike / Tehdit</div>
+        <div class="legend-item"><div class="legend-color legend-protect"></div> Yeşil: Korunma / Engelleme</div>
+    </div>
+
+    <div class="info-grid">
+        <!-- 1. Gözlem Noktası -->
+        <div class="card concept">
+            <span class="card-number">01</span>
+            <i class="card-icon fa-solid fa-satellite-dish"></i>
+            <h3 class="card-title">Gözlem Noktası</h3>
+            <p class="card-desc">Canlı trafiğin dinlenebilmesi için ethernet kartı (eth0, en0) veya localhost (lo0) üzerinde pusuya yatılır.</p>
+            <div class="detective-box">
+                🕵️ <strong>Olay Yeri:</strong> Şüphelinin geçebileceği sokak köşesi (Ağ arayüzü).
+            </div>
+        </div>
+
+        <!-- 2. Ham Veri -->
+        <div class="card concept">
+            <span class="card-number">02</span>
+            <i class="card-icon fa-solid fa-circle-nodes"></i>
+            <h3 class="card-title">Ham Paket Verisi</h3>
+            <p class="card-desc">Ağdan akan ham baytlar yakalanır. Paketlerin yönlendirme bilgileri (başlık) ve asıl taşınan veri (yük) ayrılır.</p>
+            <div class="detective-box">
+                📂 <strong>Delil:</strong> Suç mahallinde bırakılmış şüpheli mektup ve zarflar.
+            </div>
+        </div>
+
+        <!-- 3. Paket Çeviri -->
+        <div class="card scanner">
+            <span class="card-number">03</span>
+            <i class="card-icon fa-solid fa-language"></i>
+            <h3 class="card-title">Paket Tercümesi</h3>
+            <p class="card-desc">Scapy veya PCAP Reader ham veriyi okur; IP, Port ve protokolleri insan tarafından okunabilir sözlüklere dönüştürür.</p>
+            <div class="detective-box">
+                🗣️ <strong>Tercüman:</strong> Şifreli veya yabancı dildeki delilleri çözen uzman.
+            </div>
+        </div>
+
+        <!-- 4. Nmap Keşif -->
+        <div class="card scanner">
+            <span class="card-number">04</span>
+            <i class="card-icon fa-solid fa-network-wired"></i>
+            <h3 class="card-title">Nmap Aktif Tarama</h3>
+            <p class="card-desc">Hedef IP ve portlara paket göndererek açık kapıları, çalışan servis sürümlerini ve cihaz türlerini haritalandırır.</p>
+            <div class="detective-box">
+                🔍 <strong>Sorgulama:</strong> Binadaki açık kapıları ve pencereleri yoklayan devriye.
+            </div>
+        </div>
+
+        <!-- FLOW LINE BETWEEN PHASE 1 AND PHASE 2 -->
+        <div class="flow-line">
+            <div class="flow-indicator">
+                TEHDİT DETEKTÖRÜ VE TESPİT AŞAMASI <i class="fa-solid fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 5. SYN Flood -->
+        <div class="card danger">
+            <span class="card-number">05</span>
+            <i class="card-icon fa-solid fa-volcano"></i>
+            <h3 class="card-title">SYN Flood DDoS</h3>
+            <p class="card-desc">Cevap beklenmeyen binlerce yarım bağlantı isteği (SYN) atılarak hedef sistemin belleğinin kilitlenmesi durumudur.</p>
+            <div class="detective-box">
+                🚨 <strong>Tehdit:</strong> Kapıyı sürekli çalıp kaçarak ev sahibini yormak.
+            </div>
+        </div>
+
+        <!-- 6. Port Scan -->
+        <div class="card danger">
+            <span class="card-number">06</span>
+            <i class="card-icon fa-solid fa-door-open"></i>
+            <h3 class="card-title">Port Taraması</h3>
+            <p class="card-desc">Tek bir kaynak IP'nin, çok kısa sürede hedef sistemdeki onlarca farklı port kapısını hızlıca yoklamasıdır.</p>
+            <div class="detective-box">
+                🚨 <strong>Tehdit:</strong> Hırsızın sokaktaki tüm kapı kollarını tek tek zorlaması.
+            </div>
+        </div>
+
+        <!-- 7. DNS Tunneling -->
+        <div class="card danger">
+            <span class="card-number">07</span>
+            <i class="card-icon fa-solid fa-mask"></i>
+            <h3 class="card-title">DNS Tünelleme</h3>
+            <p class="card-desc">Güvenlik duvarını aşmak amacıyla çalınan verilerin DNS isteklerinin içine saklanarak dışarı sızdırılmasıdır.</p>
+            <div class="detective-box">
+                🚨 <strong>Tehdit:</strong> Gizli evrakları çöp torbasının içine koyup dışarı atmak.
+            </div>
+        </div>
+
+        <!-- 8. Engelleme -->
+        <div class="card protect">
+            <span class="card-number">08</span>
+            <i class="card-icon fa-solid fa-user-shield"></i>
+            <h3 class="card-title">Tutuklama & Korunma</h3>
+            <p class="card-desc">Tehdit algılandığında, saldırgan IP iptables veya firewall kuralları ile engellenir ve tüm kapılar kilitlenir.</p>
+            <div class="detective-box">
+                ⚡ <strong>Tutuklama:</strong> Kelepçe takılması ve suçlunun içeri atılması (DROP).
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>NetScanner v1.0.0 — <a href="simple.md">Detaylı 50 Adımlı simple.md Eğitim Kılavuzunu Oku</a></p>
+    </footer>
+
+</body>
+</html>

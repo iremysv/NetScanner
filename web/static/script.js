@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nmap:      'Nmap Hedef Taraması',
         pcap:      'PCAP Trafik Analizi',
         settings:  'Ayarlar',
+        guide:     'Görsel Rehber & Eğitim',
     };
 
     navItems.forEach(item => {
@@ -304,6 +305,58 @@ ${stats.anomalies?.length > 0
             setTimeout(connectWebSocket, 3000);
         };
     }
+
+    // ═══════════════════════════════════════════════
+    // GÖRSEL REHBER TABS & ACCORDION
+    // ═══════════════════════════════════════════════
+    const guideTabs = document.querySelectorAll('.guide-tabs .btn-tab');
+    const guideContents = document.querySelectorAll('.guide-tab-content');
+
+    guideTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabTarget = tab.getAttribute('data-guide-tab');
+
+            // Tab butonlarını güncelle
+            guideTabs.forEach(t => {
+                t.classList.remove('active');
+                t.style.color = 'var(--text-muted)';
+            });
+            tab.classList.add('active');
+            tab.style.color = '#000';
+
+            // Tab içeriklerini güncelle
+            guideContents.forEach(content => {
+                content.style.display = 'none';
+                content.classList.remove('active-tab');
+            });
+
+            const activeContent = document.getElementById(`guide-tab-${tabTarget}`);
+            if (activeContent) {
+                activeContent.style.display = tabTarget === 'infographic' ? 'grid' : 'block';
+                activeContent.classList.add('active-tab');
+            }
+        });
+    });
+
+    const accordionHeaders = document.querySelectorAll('.acc-header');
+    accordionHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const group = header.parentElement;
+            const body = group.querySelector('.acc-body');
+            const isOpened = group.classList.contains('active-group');
+
+            // Tüm accordiyonları kapat (Opsiyonel: Akordeon davranışı)
+            document.querySelectorAll('.acc-group').forEach(g => {
+                g.classList.remove('active-group');
+                g.querySelector('.acc-body').style.display = 'none';
+            });
+
+            if (!isOpened) {
+                group.classList.add('active-group');
+                body.style.display = 'flex';
+            }
+        });
+    });
 
     connectWebSocket();
 });

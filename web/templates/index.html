@@ -25,6 +25,7 @@
                 <li data-section="nmap"><i class="fa-solid fa-network-wired"></i> Nmap Taraması</li>
                 <li data-section="pcap"><i class="fa-solid fa-file-shield"></i> PCAP Analizi</li>
                 <li data-section="settings"><i class="fa-solid fa-gear"></i> Ayarlar</li>
+                <li data-section="guide"><i class="fa-solid fa-graduation-cap"></i> Görsel Rehber</li>
             </ul>
         </aside>
 
@@ -210,6 +211,228 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════ GÖRSEL REHBER & EĞİTİM ═══════════════ -->
+            <div id="section-guide" class="section-page">
+                <div class="guide-tabs glass-panel" style="display: flex; gap: 10px; padding: 10px; margin-bottom: 24px; border-radius: 12px; background: rgba(0, 0, 0, 0.2);">
+                    <button class="btn-tab active" data-guide-tab="infographic" style="flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-color); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-map"></i> Görsel Akış Şeması
+                    </button>
+                    <button class="btn-tab" data-guide-tab="steps" style="flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-list-ol"></i> 50 Adımda Ağ Analizi (simple.md)
+                    </button>
+                </div>
+
+                <!-- Tab Content 1: Infographic -->
+                <div id="guide-tab-infographic" class="guide-tab-content active-tab">
+                    <div class="color-legend-box" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); box-shadow: 0 0 6px var(--primary-color);"></span> Mavi: Temel Kavram</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #ffaa00; box-shadow: 0 0 6px #ffaa00;"></span> Turuncu: Tarama / Tercüme</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--danger-color); box-shadow: 0 0 6px var(--danger-color);"></span> Kırmızı: Tehlike / Tehdit</div>
+                        <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--success-color); box-shadow: 0 0 6px var(--success-color);"></span> Yeşil: Korunma / Engelleme</div>
+                    </div>
+
+                    <div class="infographic-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                        <!-- Card 1 -->
+                        <div class="info-card concept-card glass-panel" style="padding: 20px; border-top: 4px solid var(--primary-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--primary-color);">01</span>
+                            <div style="font-size: 1.8rem; color: var(--primary-color);"><i class="fa-solid fa-satellite-dish"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color);">Gözlem Noktası</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Canlı trafiğin dinlenebilmesi için ethernet kartı (eth0, en0) veya localhost (lo0) üzerinde pusuya yatılır.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--primary-color); font-family: monospace; color: #c8f5ff;">🕵️ <b>Olay Yeri:</b> Arayüz</div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="info-card concept-card glass-panel" style="padding: 20px; border-top: 4px solid var(--primary-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--primary-color);">02</span>
+                            <div style="font-size: 1.8rem; color: var(--primary-color);"><i class="fa-solid fa-circle-nodes"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color);">Ham Paket Verisi</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Ağdan akan ham baytlar yakalanır. Paketlerin yönlendirme bilgileri (başlık) ve asıl taşınan veri (yük) ayrılır.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--primary-color); font-family: monospace; color: #c8f5ff;">📂 <b>Delil:</b> Ham Paketler</div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="info-card scanner-card glass-panel" style="padding: 20px; border-top: 4px solid #ffaa00; position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: #ffaa00;">03</span>
+                            <div style="font-size: 1.8rem; color: #ffaa00;"><i class="fa-solid fa-language"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: #ffaa00;">Paket Tercümesi</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Scapy veya PCAP Reader ham veriyi okur; IP, Port ve protokolleri insan tarafından okunabilir sözlüklere dönüştürür.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid #ffaa00; font-family: monospace; color: #ffecc8;">🗣️ <b>Tercüman:</b> Paket Çözücü</div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="info-card scanner-card glass-panel" style="padding: 20px; border-top: 4px solid #ffaa00; position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: #ffaa00;">04</span>
+                            <div style="font-size: 1.8rem; color: #ffaa00;"><i class="fa-solid fa-network-wired"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: #ffaa00;">Nmap Aktif Tarama</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Hedef IP ve portlara paket göndererek açık kapıları, çalışan servis sürümlerini ve cihaz türlerini haritalandırır.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid #ffaa00; font-family: monospace; color: #ffecc8;">🔍 <b>Sorgulama:</b> Açık Kapılar</div>
+                        </div>
+                    </div>
+
+                    <!-- Flow arrow line -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 30px 0; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                        <span style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--border-color));"></span>
+                        <span>Tehdit Algılama & Analiz Süreci <i class="fa-solid fa-angles-right" style="color: var(--danger-color); animation: bounceRight 1.5s infinite;"></i></span>
+                        <span style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--border-color));"></span>
+                    </div>
+
+                    <div class="infographic-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+                        <!-- Card 5 -->
+                        <div class="info-card danger-card glass-panel" style="padding: 20px; border-top: 4px solid var(--danger-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--danger-color);">05</span>
+                            <div style="font-size: 1.8rem; color: var(--danger-color);"><i class="fa-solid fa-volcano"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--danger-color);">SYN Flood DDoS</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Cevap beklenmeyen binlerce yarım bağlantı isteği (SYN) atılarak hedef sistemin belleğinin kilitlenmesi durumudur.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--danger-color); font-family: monospace; color: #ffd2dc;">🚨 <b>Tehdit:</b> SYN Yığılması</div>
+                        </div>
+
+                        <!-- Card 6 -->
+                        <div class="info-card danger-card glass-panel" style="padding: 20px; border-top: 4px solid var(--danger-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--danger-color);">06</span>
+                            <div style="font-size: 1.8rem; color: var(--danger-color);"><i class="fa-solid fa-door-open"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--danger-color);">Port Taraması</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Tek bir kaynak IP'nin, çok kısa sürede hedef sistemdeki onlarca farklı port kapısını hızlıca yoklamasıdır.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--danger-color); font-family: monospace; color: #ffd2dc;">🚨 <b>Tehdit:</b> Port Tarama</div>
+                        </div>
+
+                        <!-- Card 7 -->
+                        <div class="info-card danger-card glass-panel" style="padding: 20px; border-top: 4px solid var(--danger-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--danger-color);">07</span>
+                            <div style="font-size: 1.8rem; color: var(--danger-color);"><i class="fa-solid fa-mask"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--danger-color);">DNS Tünelleme</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Güvenlik duvarını aşmak amacıyla çalınan verilerin DNS isteklerinin içine saklanarak dışarı sızdırılmasıdır.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--danger-color); font-family: monospace; color: #ffd2dc;">🚨 <b>Tehdit:</b> DNS Tünelleme</div>
+                        </div>
+
+                        <!-- Card 8 -->
+                        <div class="info-card protect-card glass-panel" style="padding: 20px; border-top: 4px solid var(--success-color); position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: transform 0.3s;">
+                            <span style="position: absolute; top: 12px; right: 16px; font-family: monospace; font-size: 1.2rem; opacity: 0.2; color: var(--success-color);">08</span>
+                            <div style="font-size: 1.8rem; color: var(--success-color);"><i class="fa-solid fa-user-shield"></i></div>
+                            <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--success-color);">Tutuklama & Korunma</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">Tehdit algılandığında, saldırgan IP iptables veya firewall kuralları ile engellenir ve tüm kapılar kilitlenir.</p>
+                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; font-size: 0.75rem; border-left: 3px solid var(--success-color); font-family: monospace; color: #d2ffd9;">⚡ <b>Tutuklama:</b> iptables DROP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content 2: 50 Steps -->
+                <div id="guide-tab-steps" class="guide-tab-content" style="display: none;">
+                    <div class="accordion-container" style="display: flex; flex-direction: column; gap: 15px;">
+                        
+                        <!-- Section 1 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: var(--primary-color); display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-shield-halved"></i> Bölüm 1: Temel Kavramlar (Adım 1-8)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>1. Ağ İletişimi:</b> Bilgisayarlar ağ üzerinde veri alışverişi yaparken bilgileri küçük paketlere bölerek iletirler. Her bilgisayarın ağda kendini temsil eden benzersiz bir IP adresi bulunur.</div>
+                                <div><b>2. Ağ Paketi:</b> Ağ üzerinden gönderilen her veri birimine paket denir. Paketler iki ana kısımdan oluşur: Header (Üstbilgi) ve Payload (Yük).</div>
+                                <div><b>3. Protokoller:</b> İletişimin kurallarını belirleyen standartlardır. Örneğin; veri iletimi için TCP/UDP, alan adlarını IP adreslerine çevirmek için DNS, web sayfaları için HTTP kullanılır.</div>
+                                <div><b>4. Port Kavramı:</b> Bir bilgisayarda çalışan servislerin dış dünyaya açılan kapılarıdır. 1 ile 65535 arasında numaralandırılırlar. (Örn: HTTP=80, HTTPS=443, SSH=22).</div>
+                                <div><b>5. Soket (Socket) Programlama:</b> Bir IP adresi ve bir port numarasının birleşiminden oluşan, iki bilgisayar arasındaki veri akış kanalını yöneten programlama arayüzüdür.</div>
+                                <div><b>6. TCP 3'lü El Sıkışması:</b> TCP bağlantısı kurulurken güvenli iletim için sırasıyla SYN (Bağlantı isteği), SYN-ACK (Onay ve istek) ve ACK (Onay) paketleri gönderilir.</div>
+                                <div><b>7. Ağ Arayüzü (Interface):</b> Bilgisayarınızın ağa bağlanan donanım kartlarıdır (örn. eth0, en0, localhost - lo0). Dinlemeler bu arayüzler üzerinden yapılır.</div>
+                                <div><b>8. Karışık Mod (Promiscuous Mode):</b> Ağ kartının, normalde sadece kendisine gelen paketleri almak yerine ağdaki tüm paketleri okumasını sağlayan moddur. Sniffing için gereklidir.</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: #ffaa00; display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-satellite-dish"></i> Bölüm 2: Nasıl Çalışır? (Adım 9-16)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: none; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>9. Sistem Mimarisi:</b> NetScanner iki sunum katmanına sahiptir: Hızlı işlemler için CLI (main.py) ve görsel analizler için Web Dashboard (FastAPI + WebSocket).</div>
+                                <div><b>10. PCAP Dosyaları:</b> Ağ arayüzünden geçen paketlerin .pcap veya .pcapng formatında diske kaydedilmiş halidir. Geçmiş adli analizlerde delil olarak kullanılır.</div>
+                                <div><b>11. pcap_reader.py:</b> NetScanner içindeki bu modül, Python'ın Scapy kütüphanesini kullanarak ham PCAP dosyalarını okur ve Python sözlüklerine dönüştürür.</div>
+                                <div><b>12. Paket Ayrıştırma:</b> Okunan ham paketlerin içindeki kaynak IP, hedef IP, portlar, protokol türleri ve paket boyutları tek tek ayrıştırılarak analiz motoruna hazır hale getirilir.</div>
+                                <div><b>13. Canlı İzleme (Sniffing):</b> Sistem aktifken ağ kartından geçen verileri anlık olarak dinleme işlemidir. Arka planda ana programı kilitlememesi için Python Threading kullanılır.</div>
+                                <div><b>14. live_sniffer.py:</b> Ağ arayüzünü sürekli dinleyen ve yakalanan her paketi anında arayüze ileten bileşendir. Scapy'nin sniff() fonksiyonu ve callback yapısı ile çalışır.</div>
+                                <div><b>15. Nmap Entegrasyonu:</b> Ağdaki aktif cihazları, açık portları ve bu portlarda çalışan servislerin versiyonlarını keşfetmek amacıyla Nmap aracını entegre eder.</div>
+                                <div><b>16. scanner.py:</b> Python'ın subprocess modülünü kullanarak arka planda Nmap komutlarını çalıştırır, çıktısını yakalar ve taramalar/ dizinine kaydeder.</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 3 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: var(--danger-color); display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-triangle-exclamation"></i> Bölüm 3: Anomali Nedir? (Adım 17-25)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: none; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>17. Anomali Tespiti:</b> Ağ trafiğinde normalin dışına çıkan, şüpheli veya zararlı olabilecek hareket modellerinin tespit edilmesidir.</div>
+                                <div><b>18. SYN Flood (DDoS):</b> Saldırganın, hedef sunucuya sürekli bağlantı isteği (SYN) gönderip, sunucunun cevabına (SYN-ACK) onay (ACK) göndermeyerek sunucu kaynaklarını tüketmesidir.</div>
+                                <div><b>19. SYN Flood Yakalama:</b> NetScanner, gelen paketlerde sadece SYN bayrağı taşıyan ve ACK bayrağı taşımayan paketleri sayar. Bir IP'den gelen SYN sayısı belirlenen eşiği aşarsa alarm üretir.</div>
+                                <div><b>20. Port Tarama (Port Scan):</b> Saldırganın, hedef sistemde hangi kapıların (portların) açık olduğunu bulmak için sırayla veya rastgele yüzlerce porta paket göndermesidir.</div>
+                                <div><b>21. Port Tarama Yakalama:</b> NetScanner, tek bir kaynak IP'nin kısa bir süre içinde kaç farklı benzersiz hedef porta bağlandığını sayar. Bu sayı eşik değerini aşarsa anomali raporlanır.</div>
+                                <div><b>22. DNS Tünelleme (DNS Tunneling):</b> Saldırganın, çalınan verileri DNS isteklerinin içine (subdomain olarak) gizleyerek dışarı sızdırmasıdır.</div>
+                                <div><b>23. DNS Tünelleme Yakalama:</b> NetScanner, bir kaynak IP'nin attığı DNS isteklerinin sıklığını takip eder. Kısa sürede anormal miktarda DNS isteği gönderilmesi durumunda uyarı verir.</div>
+                                <div><b>24. Derin Paket İnceleme (DPI):</b> Paketin payload (veri) kısmının içeriğini de tarayarak zararlı kod arama işlemidir.</div>
+                                <div><b>25. DNS DPI Anomalisi:</b> NetScanner, DNS isteklerindeki sorgu adının (domain) uzunluğunu kontrol eder. Eğer sorgu adı 50 karakterden uzunsa bunu DNS DPI anomalisi olarak işaretler.</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: var(--primary-color); display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-chart-bar"></i> Bölüm 4: Hangi Bilgiler Toplanır? (Adım 26-33)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: none; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>26. Top Talkers:</b> Ağ üzerinde en fazla veri gönderen ve alan, dolayısıyla ağ bandını en çok meşgul eden ilk 10 aktif IP adresidir.</div>
+                                <div><b>27. IP Konumlandırma (GeoIP):</b> İnternet üzerindeki harici IP adreslerinin hangi ülkeye ve şehre ait olduğunu belirleme işlemidir. Tehdidin coğrafi kaynağını anlamaya yardımcı olur.</div>
+                                <div><b>28. OSINT ve ip-api.com:</b> NetScanner, harici IP adreslerini konumlandırmak için açık kaynak istihbaratı kapsamında ip-api.com web servisine sorgular gönderir.</div>
+                                <div><b>29. GeoIP Önbelleği (Cache):</b> Aynı IP adresini tekrar tekrar sorgulamamak ve harici API limitlerini aşmamak için sorgulanan IP'lerin konum bilgileri cache'de saklanır.</div>
+                                <div><b>30. Yerel IP'lerin Ayrıştırılması:</b> RFC 1918 standartlarındaki özel IP blokları (örn. 192.168.x.x, 10.x.x.x, 127.0.0.1) GeoIP sorgusuna gönderilmez, doğrudan "Yerel Ağ (Local)" olarak işaretlenir.</div>
+                                <div><b>31. Protokol Dağılımı:</b> Yakalanan tüm paketler arasında hangi protokolün (HTTP, HTTPS, DNS, TCP vb.) yüzde kaçlık bir paya sahip olduğunu gösteren istatistiksel veridir.</div>
+                                <div><b>32. Veri Sızdırma (Data Exfiltration):</b> Ağ dışına büyük dosya çıkarılmasını yakalamak için NetScanner, paket boyutlarını (length) inceler. Eşik değerden büyük paketleri şüpheli transfer olarak kaydeder.</div>
+                                <div><b>33. HTTP Malicious Payload:</b> HTTP trafiğinde paket içeriği taranır. Payload kısmında sql, script veya curl gibi şüpheli anahtar kelimeler geçerse anomali listesine eklenir.</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 5 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: var(--success-color); display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-user-shield"></i> Bölüm 5: Nasıl Korunuruz? (Adım 34-42)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: none; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>34. Dedektif Mantığı ve Tutuklama:</b> Ağ trafiğinde şüpheliyi bulduktan sonra (Tespit), ağa zarar vermesini engellemek için güvenlik duvarı kuralları ile engelleme (Tutuklama) adımı uygulanır.</div>
+                                <div><b>35. Güvenlik Duvarı (Firewall):</b> Belirlenen kurallara göre ağ trafiğini geçiren veya engelleyen ilk savunma hattıdır. Yazılımsal veya donanımsal olabilir.</div>
+                                <div><b>36. Saldırgan IP'yi Engelleme:</b> Tespit edilen zararlı IP adreslerinin sisteme veya ağa erişimini tamamen kesmek için işletim sistemi düzeyinde engelleme kuralları yazılır.</div>
+                                <div><b>37. iptables Kuralı Yazma:</b> Linux sistemlerde bir IP'yi engellemek için terminale yazılan komuttur: <code style="background:rgba(0,0,0,0.3); padding:2px 6px; border-radius:4px; font-family:monospace; color:var(--primary-color);">sudo iptables -A INPUT -s [SALDIRGAN_IP] -j DROP</code></div>
+                                <div><b>38. TCP SYN Cookies:</b> SYN Flood DDoS saldırılarına karşı sunucunun hafızasını korumak amacıyla bağlantı durumunu paketin içerisine şifreli (cookie) yazma yöntemidir.</div>
+                                <div><b>39. Port Taramasından Korunma:</b> Kullanılmayan tüm portlar kapatılmalı, açık portlar ise sadece belirli güvenilir IP adreslerine (Whitelisting) izin verecek şekilde yapılandırılmalıdır.</div>
+                                <div><b>40. DNS Filtreleme:</b> Şirket ağında sadece yetkilendirilmiş DNS sunucularına izin verilmeli, diğer tüm DNS portları (Port 53) kapatılarak DNS tünelleme engellenmelidir.</div>
+                                <div><b>41. WAF (Web Application Firewall):</b> HTTP paketlerini uygulama katmanında inceleyerek SQL Injection ve XSS gibi saldırıları web sunucusuna ulaşmadan engeller.</div>
+                                <div><b>42. Sıfır Güven (Zero Trust):</b> "Asla güvenme, her zaman doğrula" prensibidir. Ağın içindeki cihazların bile her an ele geçirilebileceğini varsayarak her bağlantıda kimlik doğrulama ister.</div>
+                            </div>
+                        </div>
+
+                        <!-- Section 6 -->
+                        <div class="acc-group glass-panel" style="overflow: hidden;">
+                            <div class="acc-header" style="padding: 16px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color);">
+                                <h4 style="font-weight: 600; color: var(--text-color); display: flex; align-items: center; gap: 10px;"><i class="fa-solid fa-clipboard-list"></i> Bölüm 6: Proje Notları & Özet (Adım 43-50)</h4>
+                                <i class="fa-solid fa-chevron-down" style="transition: transform 0.3s; color: var(--text-muted);"></i>
+                            </div>
+                            <div class="acc-body" style="padding: 20px; display: none; flex-direction: column; gap: 12px; font-size: 0.9rem; line-height: 1.5;">
+                                <div><b>43. Modüler Tasarım:</b> NetScanner'ın analiz motoru (TrafficAnalyzer) ile veri toplama motoru (LiveSniffer/PcapReader) tamamen ayrıdır. Bu sayede sisteme yeni bir analiz kuralı eklemek oldukça kolaydır.</div>
+                                <div><b>44. CLI ve Web Entegrasyonu:</b> CLI doğrudan sunucu terminallerinde hızlıca tarama yapmak için idealken, Web Dashboard yöneticilerin grafikleri ve canlı akışı izlemesini kolaylaştırır.</div>
+                                <div><b>45. WebSocket Teknolojisi:</b> Tarayıcının sürekli istek atıp sunucuyu yorması yerine, sunucunun yakaladığı yeni paketleri tarayıcıya anında itmesini sağlayan çift yönlü iletişim kanalıdır.</div>
+                                <div><b>46. Sahte Veri (Dummy Data) Testleri:</b> Gerçek bir saldırı gerçekleştirmeden tespit motorunu test etmek için anomali içeren sentetik ağ trafik dosyaları üretilir.</div>
+                                <div><b>47. generate_dummy.py:</b> Projede yer alan bu script; içinde SYN Flood, Port Tarama ve DNS Tünelleme aktiviteleri barındıran yapay bir dummy.pcap dosyası oluşturur ve testlerin doğruluğunu kanıtlar.</div>
+                                <div><b>48. Karşılaştırma Tablosu:</b> Normal trafik modelinde SYN/ACK oranı dengelidir ve bilinen portlara erişilir. Şüpheli trafikte ise tekil IP'lerden aniden yüzlerce port yoklanır, SYN flag'leri yığılır, DNS alt alan adları anormal uzunlaşır.</div>
+                                <div><b>49. Polis Dedektifi Mantığı:</b> Olay Yeri = Ağ Arayüzü, Delil = Paketler, Tercüman = Paket Çözücü, Kanıt = Anomaliler, Tutuklama = iptables engellemeleri.</div>
+                                <div><b>50. Son Söz:</b> Ağ güvenliği statik bir durum değil, dinamik bir süreçtir. En önemli bileşen, arka plandaki mantığı anlayan eğitimli siber güvenlik uzmanıdır.</div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

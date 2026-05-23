@@ -381,3 +381,84 @@ input[type="text"]:focus {
     overflow-y: auto;
     white-space: pre-wrap;
 }
+
+/* ═══════════════════════════════════════════════
+   GÖRSEL REHBER STİLLERİ
+   ═══════════════════════════════════════════════ */
+.btn-tab {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-tab.active {
+    background: var(--primary-color) !important;
+    color: #000 !important;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.guide-tab-content {
+    display: none;
+    animation: fadeInUp 0.3s ease;
+}
+
+.guide-tab-content.active-tab {
+    display: block;
+}
+
+.info-card {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.concept-card:hover {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    border-color: rgba(0, 240, 255, 0.2) !important;
+}
+
+.scanner-card:hover {
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.15);
+    border-color: rgba(255, 170, 0, 0.2) !important;
+}
+
+.danger-card:hover {
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.15);
+    border-color: rgba(255, 51, 102, 0.2) !important;
+}
+
+.protect-card:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 102, 0.15);
+    border-color: rgba(0, 255, 102, 0.2) !important;
+}
+
+/* Accordion Stilleri */
+.acc-header {
+    transition: background 0.3s;
+}
+
+.acc-header:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.acc-group.active-group .acc-header {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.acc-group.active-group .fa-chevron-down {
+    transform: rotate(180deg);
+    color: var(--primary-color) !important;
+}
+
+@keyframes bounceRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+}
+
