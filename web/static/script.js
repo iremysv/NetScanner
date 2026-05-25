@@ -79,13 +79,17 @@ document.addEventListener('DOMContentLoaded', () => {
         scanForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const targetIp = document.getElementById('target-ip').value;
-            const scanType = document.querySelector('input[name="scan_type"]:checked').value;
+            const scanType = document.getElementById('nmap-scan-type').value;
 
             logTo(nmapOutput, `🚀 ${targetIp} hedefine Nmap taraması başlatılıyor... Lütfen bekleyin.`, 'info');
             logTo(terminalOutput, `🚀 Nmap taraması başlatıldı → ${targetIp}`, 'warning');
             nmapLoader.style.display = 'block';
             btnScan.disabled = true;
             btnScan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Taranıyor';
+
+            // Hide previous results
+            const parsedWidget = document.getElementById('nmap-parsed-widget');
+            if (parsedWidget) parsedWidget.style.display = 'none';
 
             try {
                 const response = await fetch('/api/scan', {
@@ -100,6 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     logTo(terminalOutput, `✅ Nmap taraması tamamlandı → ${targetIp}`, 'success');
                     nmapOutput.innerHTML += `<div style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px;">${data.result}</div>\n`;
                     nmapOutput.scrollTop = nmapOutput.scrollHeight;
+
+                    // Parse and display open ports in a table
+                    parseAndRenderNmapResults(data.result);
                 } else {
                     logTo(nmapOutput, `❌ Tarama başarısız: ${data.message}`, 'error');
                 }
@@ -156,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     logTo(pcapOutput, `✅ PCAP analizi tamamlandı!`, 'success');
                     logTo(terminalOutput, `✅ PCAP analizi tamamlandı → ${file.name}`, 'success');
                     const stats = data.data;
+                    
+                    // Update main dashboard dynamic elements
+                    updateDashboard(stats);
+
                     const resultText = `
 [PROTOKOL DAĞILIMI]
 DNS:   ${stats.protocol_distribution?.DNS   || 0} paket
@@ -172,14 +183,6 @@ ${stats.anomalies?.length > 0
                     `;
                     pcapOutput.innerHTML += `<pre style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.9em; white-space:pre-wrap;">${resultText}</pre>\n`;
                     pcapOutput.scrollTop = pcapOutput.scrollHeight;
-
-                    // Dashboard stat güncelle
-                    const statPort = document.getElementById('stat-port-scan');
-                    const statDns  = document.getElementById('stat-dns-tunnel');
-                    const statTotal = document.getElementById('stat-total-packets');
-                    if (statPort) statPort.innerText = stats.anomalies?.filter(a => a.type === 'PORT_SCAN').length || 0;
-                    if (statDns)  statDns.innerText  = stats.anomalies?.filter(a => a.type?.includes('DNS_TUNNELING')).length || 0;
-                    if (statTotal) statTotal.innerText = stats.total_packets || 0;
                 } else {
                     logTo(pcapOutput, `❌ Analiz hatası: ${data.message}`, 'error');
                 }
@@ -240,6 +243,10 @@ ${stats.anomalies?.length > 0
 
                     if (data.data && Object.keys(data.data).length > 0) {
                         const stats = data.data;
+                        
+                        // Update main dashboard dynamically
+                        updateDashboard(stats);
+
                         const resultText = `
 [CANLI ANALİZ SONUÇLARI]
 Toplam Yakalanan Paket: ${stats.total_packets || 0}
@@ -252,9 +259,6 @@ ${stats.anomalies?.length > 0
                         `;
                         liveOutput.innerHTML += `<pre style="color:#e2e8f0; margin-top:10px; border-top:1px dashed #333; padding-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.9em; white-space:pre-wrap;">${resultText}</pre>\n`;
                         liveOutput.scrollTop = liveOutput.scrollHeight;
-
-                        const statTotal = document.getElementById('stat-total-packets');
-                        if (statTotal) statTotal.innerText = stats.total_packets || 0;
                     } else {
                         logTo(liveOutput, data.message || 'Dinleme durduruldu.', 'warning');
                     }
@@ -295,6 +299,8 @@ ${stats.anomalies?.length > 0
                     liveOutput.scrollTop = liveOutput.scrollHeight;
                     if (liveStatusBadge) liveStatusBadge.innerText = `Dinleniyor (${data.count} paket)`;
                 }
+                const statTotal = document.getElementById('stat-total-packets');
+                if (statTotal) statTotal.innerText = data.count || 0;
             } else if (data.type === 'success') {
                 logTo(terminalOutput, data.message, 'success');
             }
@@ -357,6 +363,215 @@ ${stats.anomalies?.length > 0
             }
         });
     });
+
+    // ═══════════════════════════════════════════════
+    // DINAMIK DOCK GÖRÜNÜM VE TABLO RENDERERLARI
+    // ═══════════════════════════════════════════════
+
+    function parseAndRenderNmapResults(stdout) {
+        const portsTableBody = document.querySelector('#nmap-ports-table tbody');
+        const parsedWidget = document.getElementById('nmap-parsed-widget');
+        if (!portsTableBody || !parsedWidget) return;
+
+        portsTableBody.innerHTML = '';
+        
+        // Match line pattern like "80/tcp open http"
+        const regex = /(\d+)\/(tcp|udp)\s+(\w+)\s+(\S+)/g;
+        let match;
+        let found = false;
+
+        while ((match = regex.exec(stdout)) !== null) {
+            found = true;
+            const port = `${match[1]}/${match[2]}`;
+            const state = match[3];
+            const service = match[4];
+
+            let stateColor = '#00ff66';
+            if (state !== 'open') stateColor = '#ffcc00';
+
+            const row = `
+                <tr>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:bold; color:var(--primary-color);">${port}</td>
+                    <td><span class="severity-badge" style="background:rgba(0,255,102,0.1); color:${stateColor}; border:1px solid ${stateColor}aa; font-size:0.7rem; padding:2px 6px;">${state}</span></td>
+                    <td style="font-family:'JetBrains Mono',monospace;">${service}</td>
+                </tr>
+            `;
+            portsTableBody.innerHTML += row;
+        }
+
+        if (found) {
+            parsedWidget.style.display = 'block';
+        } else {
+            parsedWidget.style.display = 'none';
+        }
+    }
+
+    function updateDashboard(stats) {
+        if (!stats) return;
+
+        // 1. Sayaçları Güncelle
+        const statPort = document.getElementById('stat-port-scan');
+        const statDns  = document.getElementById('stat-dns-tunnel');
+        const statTotal = document.getElementById('stat-total-packets');
+        
+        if (statPort) {
+            statPort.innerText = stats.anomalies?.filter(a => a.type === 'PORT_SCAN').length || 0;
+        }
+        if (statDns) {
+            statDns.innerText = stats.anomalies?.filter(a => a.type?.includes('DNS_TUNNELING') || a.type?.includes('DNS_DPI')).length || 0;
+        }
+        if (statTotal) {
+            statTotal.innerText = stats.total_packets || 0;
+        }
+
+        // 2. Alt Tabloları Doldur
+        renderAnomalies(stats.anomalies || []);
+        renderProtocolDistribution(stats.protocol_distribution || {}, stats.total_packets || 0);
+        renderTopTalkers(stats.top_talkers || []);
+        renderConnectionMap(stats.connection_map || []);
+    }
+
+    function renderAnomalies(anomalies) {
+        const tbody = document.querySelector('#db-anomalies-table tbody');
+        if (!tbody) return;
+
+        if (anomalies.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-circle-check" style="color:var(--success-color);"></i> Herhangi bir tehdit veya anomali tespit edilmedi.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        anomalies.forEach(a => {
+            let badgeClass = 'bilgi';
+            let badgeText = 'BİLGİ';
+            const atype = a.type || 'UNKNOWN';
+
+            if (atype.includes('SYN_FLOOD')) {
+                badgeClass = 'kritik';
+                badgeText = 'KRİTİK';
+            } else if (atype.includes('DATA_EXFILTRATION')) {
+                badgeClass = 'yuksek';
+                badgeText = 'YÜKSEK';
+            } else if (atype.includes('HTTP_MALICIOUS')) {
+                badgeClass = 'orta';
+                badgeText = 'ORTA';
+            } else if (atype.includes('PORT_SCAN')) {
+                badgeClass = 'orta';
+                badgeText = 'ORTA';
+            } else if (atype.includes('DNS_TUNNELING')) {
+                badgeClass = 'orta';
+                badgeText = 'ORTA';
+            }
+
+            const row = `
+                <tr>
+                    <td><span class="severity-badge ${badgeClass}">${badgeText}</span></td>
+                    <td style="font-weight:600; color:var(--danger-color);">${atype}</td>
+                    <td style="font-family:'JetBrains Mono',monospace;">${a.source_ip || 'Bilinmiyor'}</td>
+                    <td>${a.details || ''}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function renderProtocolDistribution(protocols, totalPackets) {
+        const container = document.getElementById('db-protocols-container');
+        if (!container) return;
+
+        const entries = Object.entries(protocols);
+        if (entries.length === 0) {
+            container.innerHTML = `
+                <div class="no-data-placeholder" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding-top: 40px;"><i class="fa-solid fa-chart-simple"></i> Veri bekleniyor...</div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        entries.forEach(([proto, count]) => {
+            const percent = totalPackets > 0 ? ((count / totalPackets) * 100).toFixed(1) : 0;
+            const barClass = proto.toLowerCase();
+            
+            const barHtml = `
+                <div class="progress-wrapper">
+                    <div class="progress-label">
+                        <span>${proto}</span>
+                        <span>${count} paket (${percent}%)</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar ${barClass}" style="width: ${percent}%"></div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += barHtml;
+        });
+    }
+
+    function renderTopTalkers(talkers) {
+        const tbody = document.querySelector('#db-top-talkers-table tbody');
+        if (!tbody) return;
+
+        if (talkers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-arrow-trend-up"></i> Veri bekleniyor...</td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        talkers.forEach(t => {
+            const row = `
+                <tr>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--primary-color);">${t.ip}</td>
+                    <td>${t.count}</td>
+                    <td><span style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-solid fa-location-dot" style="color:var(--danger-color); margin-right:4px;"></i>${t.location}</span></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function renderConnectionMap(connections) {
+        const tbody = document.querySelector('#db-connection-table tbody');
+        if (!tbody) return;
+
+        if (connections.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-route"></i> Veri bekleniyor...</td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        connections.slice(0, 10).forEach(c => {
+            const portsStr = c.ports?.join(', ') || 'N/A';
+            const row = `
+                <tr>
+                    <td style="font-family:'JetBrains Mono',monospace;">${c.src}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">${c.dst}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; color:var(--warning-color);">${portsStr}</td>
+                    <td>${c.count}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        if (connections.length > 10) {
+            tbody.innerHTML += `
+                <tr>
+                    <td colspan="4" style="text-align:center; color:var(--text-muted); font-size:0.8rem; font-style:italic;">... ve ${connections.length - 10} adet bağlantı daha ...</td>
+                </tr>
+            `;
+        }
+    }
 
     connectWebSocket();
 });

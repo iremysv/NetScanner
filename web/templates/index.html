@@ -44,7 +44,7 @@
                 <div class="dashboard-grid">
 
                     <!-- Stats Widget -->
-                    <div class="widget glass-panel span-3">
+                    <div class="widget glass-panel span-2">
                         <div class="widget-header">
                             <h3><i class="fa-solid fa-chart-pie"></i> Anomali İstatistikleri</h3>
                         </div>
@@ -61,6 +61,100 @@
                                 <span class="stat-value" id="stat-total-packets">0</span>
                                 <span class="stat-label">Toplam Paket</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Developer & University Card -->
+                    <div class="widget glass-panel dev-card span-1">
+                        <div class="widget-body" style="display: flex; align-items: center; gap: 16px; height: 100%; justify-content: center; padding: 12px 20px;">
+                            <img src="/static/Isu_logo.svg" alt="İSU Logo" class="university-logo" style="width: 65px; height: 65px; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.4)); animation: spin-slow 20s linear infinite;">
+                            <div class="dev-info" style="font-size: 0.85rem; line-height: 1.4; color: var(--text-muted);">
+                                <h4 style="color: var(--primary-color); font-weight: 800; font-size: 1rem; margin-bottom: 4px;">İstinye Üniversitesi</h4>
+                                <p style="margin: 2px 0;"><strong style="color: var(--text-color);">Geliştirici:</strong> İrem Yasav</p>
+                                <p style="margin: 2px 0;"><strong style="color: var(--text-color);">Danışman:</strong> Keyvan Arasteh Abbasabad</p>
+                                <p style="margin: 2px 0;"><strong style="color: var(--text-color);">Proje:</strong> NetScanner v1.0.0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Son Tehditler / Anomali Listesi Panel -->
+                    <div class="widget glass-panel span-2" style="min-height: 250px;">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-shield-virus"></i> Tespit Edilen Anomaliler & Tehdit Uyarısı</h3>
+                        </div>
+                        <div class="widget-body" style="padding: 0; max-height: 220px; overflow-y: auto;">
+                            <table class="styled-table" id="db-anomalies-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 15%;">Seviye</th>
+                                        <th style="width: 25%;">Tehdit Türü</th>
+                                        <th style="width: 20%;">Kaynak IP</th>
+                                        <th style="width: 40%;">Detay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-circle-check" style="color:var(--success-color);"></i> Herhangi bir tehdit veya anomali tespit edilmedi.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Protokol Dağılımı Panel -->
+                    <div class="widget glass-panel span-1" style="min-height: 250px;">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-chart-column"></i> Protokol Dağılımı</h3>
+                        </div>
+                        <div class="widget-body" id="db-protocols-container" style="display: flex; flex-direction: column; gap: 12px; max-height: 220px; overflow-y: auto;">
+                            <div class="no-data-placeholder" style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding-top: 40px;"><i class="fa-solid fa-chart-simple"></i> Veri bekleniyor...</div>
+                        </div>
+                    </div>
+
+                    <!-- En Aktif IP Adresleri (Top Talkers) Table -->
+                    <div class="widget glass-panel span-1" style="min-height: 280px;">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-crown"></i> En Aktif IP Adresleri</h3>
+                        </div>
+                        <div class="widget-body" style="padding: 0; max-height: 240px; overflow-y: auto;">
+                            <table class="styled-table" id="db-top-talkers-table">
+                                <thead>
+                                    <tr>
+                                        <th>IP Adresi</th>
+                                        <th>Paket</th>
+                                        <th>Konum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="3" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-arrow-trend-up"></i> Veri bekleniyor...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bağlantı Haritası (Connection Map) Table -->
+                    <div class="widget glass-panel span-2" style="min-height: 280px;">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-diagram-project"></i> Ağ Bağlantı Haritası</h3>
+                        </div>
+                        <div class="widget-body" style="padding: 0; max-height: 240px; overflow-y: auto;">
+                            <table class="styled-table" id="db-connection-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kaynak IP</th>
+                                        <th>Hedef IP</th>
+                                        <th>Portlar</th>
+                                        <th>Paket Sayısı</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="no-data-placeholder" style="text-align: center; color: var(--text-muted); padding: 40px 0;"><i class="fa-solid fa-route"></i> Veri bekleniyor...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -120,17 +214,45 @@
                         </div>
                         <div class="widget-body">
                             <form id="scan-form">
-                                <div class="input-group">
+                                <div class="input-group" style="margin-bottom: 20px;">
                                     <input type="text" id="target-ip" placeholder="Hedef IP veya Domain girin (Örn: scanme.nmap.org)" required>
                                     <button type="submit" class="btn-primary" id="btn-scan">
                                         <i class="fa-solid fa-play"></i> Başlat
                                     </button>
                                 </div>
-                                <div class="scan-options">
-                                    <label><input type="radio" name="scan_type" value="quick" checked> Hızlı Tarama</label>
-                                    <label><input type="radio" name="scan_type" value="detailed"> Derin Tarama (-sV -O)</label>
+                                <div class="scan-options-group" style="margin-top: 15px;">
+                                    <label for="nmap-scan-type" style="display:block; margin-bottom:8px; font-weight:600; color:var(--text-muted); font-size:0.9rem;">Tarama Tipi</label>
+                                    <select id="nmap-scan-type" class="styled-select" style="width:100%; padding:12px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); border-radius:8px; color:var(--text-color); font-family:inherit; outline:none; transition:0.3s; cursor:pointer;">
+                                        <option value="quick">Hızlı Tarama (-F) [Top 100 Port]</option>
+                                        <option value="discovery">Cihaz Keşfi (-sn) [Ping Scan]</option>
+                                        <option value="service">Servis Versiyon Tespiti (-sV)</option>
+                                        <option value="os">İşletim Sistemi Analizi (-O) (Kök/Root Yetkisi)</option>
+                                        <option value="aggressive">Agresif Tarama (-A) (Kök/Root Yetkisi)</option>
+                                        <option value="vuln">NSE Zafiyet Taraması (--script=vuln)</option>
+                                    </select>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Nmap Parsed Results Table -->
+                    <div class="widget glass-panel span-3" id="nmap-parsed-widget" style="display: none;">
+                        <div class="widget-header">
+                            <h3><i class="fa-solid fa-list-check"></i> Açık Portlar ve Servisler</h3>
+                        </div>
+                        <div class="widget-body" style="padding: 0; max-height: 300px; overflow-y: auto;">
+                            <table class="styled-table" id="nmap-ports-table">
+                                <thead>
+                                    <tr>
+                                        <th>Port</th>
+                                        <th>Durum</th>
+                                        <th>Servis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic rows will be inserted here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 

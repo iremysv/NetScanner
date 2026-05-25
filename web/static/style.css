@@ -462,3 +462,156 @@ input[type="text"]:focus {
     50% { transform: translateX(4px); }
 }
 
+/* ═══════════════════════════════════════════════
+   YENİ PANEL BİLEŞEN STİLLERİ (TABLOLAR, BARLAR)
+   ═══════════════════════════════════════════════ */
+
+@keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.university-logo {
+    transition: transform 0.8s ease;
+}
+
+.university-logo:hover {
+    transform: scale(1.1) rotate(15deg);
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.6)) !important;
+}
+
+/* Tablolar */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.styled-table th {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--primary-color);
+    padding: 12px 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.styled-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    color: var(--text-color);
+    vertical-align: middle;
+}
+
+.styled-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.styled-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.no-data-placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Progress Barlar */
+.progress-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.progress-container {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.1, 0.8, 0.1, 1.0);
+    box-shadow: 0 0 8px currentColor;
+}
+
+/* Protokol Renkleri */
+.progress-bar.dns   { background-color: var(--warning-color); color: var(--warning-color); }
+.progress-bar.http  { background-color: var(--primary-color); color: var(--primary-color); }
+.progress-bar.https { background-color: var(--success-color); color: var(--success-color); }
+.progress-bar.tcp   { background-color: #a855f7; color: #a855f7; }
+.progress-bar.udp   { background-color: #ec4899; color: #ec4899; }
+.progress-bar.other { background-color: var(--text-muted); color: var(--text-muted); }
+
+/* Güvenlik Seviye Rozetleri (Severity Badges) */
+.severity-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.severity-badge.kritik {
+    background: rgba(255, 51, 102, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(255, 51, 102, 0.3);
+}
+
+.severity-badge.yuksek {
+    background: rgba(255, 170, 0, 0.1);
+    color: var(--warning-color);
+    border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.severity-badge.orta {
+    background: rgba(255, 204, 0, 0.1);
+    color: #eab308;
+    border: 1px solid rgba(255, 204, 0, 0.3);
+}
+
+.severity-badge.dusuk {
+    background: rgba(0, 255, 102, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(0, 255, 102, 0.3);
+}
+
+.severity-badge.bilgi {
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.styled-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2);
+}
+
+.styled-select option {
+    background-color: #0b0f19;
+    color: var(--text-color);
+}
+
+

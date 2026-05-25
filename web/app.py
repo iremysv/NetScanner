@@ -70,7 +70,7 @@ async def get_dashboard(request: Request):
     )
 
 # Tarama İstek Modeli
-_ALLOWED_SCAN_TYPES = {"quick", "detailed"}
+_ALLOWED_SCAN_TYPES = {"quick", "discovery", "service", "os", "aggressive", "vuln"}
 _TARGET_PATTERN = re.compile(
     r"^("
     r"(\d{1,3}\.){3}\d{1,3}"           # IPv4: 192.168.1.1
@@ -114,16 +114,27 @@ async def run_scan(req: ScanRequest):
     hedef = req.target
     if req.scan_type == "quick":
         komut_listesi = ["nmap", "-T4", "-F", hedef]
-    else:
+    elif req.scan_type == "discovery":
+        komut_listesi = ["nmap", "-T4", "-sn", hedef]
+    elif req.scan_type == "service":
         komut_listesi = ["nmap", "-T4", "-sV", hedef]
+    elif req.scan_type == "os":
+        komut_listesi = ["sudo", "nmap", "-T4", "-O", hedef]
+    elif req.scan_type == "aggressive":
+        komut_listesi = ["sudo", "nmap", "-T4", "-A", hedef]
+    elif req.scan_type == "vuln":
+        komut_listesi = ["nmap", "-sV", "--script=vuln", hedef]
+    else:
+        raise HTTPException(status_code=400, detail="Geçersiz tarama tipi.")
 
     # WebSocket ile anlık "Başladı" mesajı
     await manager.broadcast(
-        {"type": "info", "message": f"{hedef} için tarama başlatılıyor..."}
+        {"type": "info", "message": f"{hedef} için {req.scan_type} tarama başlatılıyor..."}
     )
 
-    sonuc_text, rapor_yolu = nmap_calistir(
-        komut_listesi, hedef, f"web_scan_{hedef}"
+    loop = asyncio.get_running_loop()
+    sonuc_text, rapor_yolu = await loop.run_in_executor(
+        None, nmap_calistir, komut_listesi, hedef, f"web_scan_{hedef}"
     )
 
     if sonuc_text:
