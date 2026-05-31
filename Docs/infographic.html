@@ -65,6 +65,48 @@
             line-height: 1.6;
         }
 
+        .uni-logo {
+            height: 65px;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+        }
+
+        .uni-logo:hover {
+            transform: scale(1.08) rotate(2deg);
+            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.6));
+        }
+
+        .project-info {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .info-badge {
+            background: rgba(20, 26, 40, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-badge:hover {
+            border-color: var(--color-concept);
+            color: var(--text-color);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+
         /* Renk Açıklama Kartı */
         .color-legend {
             display: flex;
@@ -319,6 +361,14 @@
 <body>
 
     <header>
+        <div style="margin-bottom: 25px; display: flex; justify-content: center; align-items: center;">
+            <img src="../ISU_LOGO_TR.png" alt="İstinye Üniversitesi Logo" class="uni-logo">
+        </div>
+        <div class="project-info">
+            <span class="info-badge"><i class="fa-solid fa-graduation-cap"></i> İstinye Üniversitesi</span>
+            <span class="info-badge"><i class="fa-solid fa-user"></i> Geliştirici: İrem Yasav</span>
+            <span class="info-badge"><i class="fa-solid fa-chalkboard-user"></i> Danışman: Keyvan Arasteh Abbasabad</span>
+        </div>
         <h1>📖 Nasıl Çalışır? Ağ Güvenlik Görsel Rehberi</h1>
         <p>Ağ paketlerinin toplanmasından zafiyetlerin tespitine ve engelleme kurallarına kadar geçen tüm siber dedektiflik sürecini renk kodlu adımlarla inceleyin.</p>
     </header>

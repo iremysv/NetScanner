@@ -14,7 +14,13 @@
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar glass-panel">
-            <div class="logo-area">
+            <div class="university-sidebar-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                <img src="/static/Isu_logo.svg" alt="İSU Logo" class="university-logo-sidebar" style="width: 35px; height: 35px; filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.3)); transition: transform 0.4s ease;">
+                <div style="font-size: 0.72rem; line-height: 1.3; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+                    İstinye<br><span style="color: var(--primary-color);">Üniversitesi</span>
+                </div>
+            </div>
+            <div class="logo-area" style="margin-bottom: 25px;">
                 <h2><i class="fa-solid fa-shield-halved"></i> NetScanner</h2>
                 <span class="badge">PRO</span>
             </div>
@@ -350,6 +356,19 @@
 
                 <!-- Tab Content 1: Infographic -->
                 <div id="guide-tab-infographic" class="guide-tab-content active-tab">
+                    <div class="guide-academic-header glass-panel" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 24px; margin-bottom: 24px; border-radius: 12px; background: rgba(20, 26, 40, 0.4);">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="/static/Isu_logo.svg" alt="İSU Logo" style="width: 50px; height: 50px; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));">
+                            <div>
+                                <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-color); margin-bottom: 4px;">İstinye Üniversitesi</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Mühendislik ve Doğa Bilimleri Fakültesi</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="info-badge-dashboard" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 4.5px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: 0.3s;"><i class="fa-solid fa-user" style="color: var(--primary-color);"></i> Geliştirici: İrem Yasav</span>
+                            <span class="info-badge-dashboard" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); padding: 4.5px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: 0.3s;"><i class="fa-solid fa-chalkboard-user" style="color: var(--warning-color);"></i> Danışman: Keyvan Arasteh Abbasabad</span>
+                        </div>
+                    </div>
                     <div class="color-legend-box" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem;">
                         <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); box-shadow: 0 0 6px var(--primary-color);"></span> Mavi: Temel Kavram</div>
                         <div style="display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #ffaa00; box-shadow: 0 0 6px #ffaa00;"></span> Turuncu: Tarama / Tercüme</div>
