@@ -70,7 +70,14 @@ async def get_dashboard(request: Request):
     )
 
 # Tarama İstek Modeli
-_ALLOWED_SCAN_TYPES = {"quick", "discovery", "service", "os", "aggressive", "vuln"}
+_ALLOWED_SCAN_TYPES = {
+    "quick",
+    "discovery",
+    "service",
+    "os",
+    "aggressive",
+    "vuln",
+}
 _TARGET_PATTERN = re.compile(
     r"^("
     r"(\d{1,3}\.){3}\d{1,3}"           # IPv4: 192.168.1.1
@@ -129,7 +136,12 @@ async def run_scan(req: ScanRequest):
 
     # WebSocket ile anlık "Başladı" mesajı
     await manager.broadcast(
-        {"type": "info", "message": f"{hedef} için {req.scan_type} tarama başlatılıyor..."}
+        {
+            "type": "info",
+            "message": (
+                f"{hedef} için {req.scan_type} tarama başlatılıyor..."
+            ),
+        }
     )
 
     loop = asyncio.get_running_loop()

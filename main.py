@@ -129,7 +129,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Örnekler:\n"
-            "  sudo python3 main.py                          # İnteraktif menü\n"
+            "  sudo python3 main.py                       # İnteraktif menü\n"
             "  sudo python3 main.py --pcap trafik.pcap       # PCAP analizi\n"
             "  sudo python3 main.py --nmap-quick 192.168.1.1 # Hızlı Nmap\n"
             "  sudo python3 main.py --nmap-vuln 10.0.0.1    # Zafiyet tarama\n"

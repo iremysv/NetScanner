@@ -57,3 +57,6 @@ omit = ["venv/*", "Tests/*", "*/__pycache__/*"]
 show_missing = true
 skip_covered = false
 fail_under = 40
+
+[tool.mypy]
+ignore_missing_imports = true

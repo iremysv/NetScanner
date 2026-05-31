@@ -28,8 +28,8 @@ def _make_packet(
     protocol: str = "TCP",
     flags: str = "",
     length: int = 100,
-    payload_preview: str = None,
-    dns_query: str = None,
+    payload_preview: str | None = None,
+    dns_query: str | None = None,
 ) -> dict:
     """TrafficAnalyzer'ın beklediği dict formatında sahte paket oluşturur."""
     return {
@@ -280,7 +280,9 @@ class TestConnectionMap:
         assert result == {}
 
     def test_connection_map_structure(self):
-        """connection_map her eleman dict olmalı; src/dst/ports/count içermeli."""
+        """connection_map her eleman dict olmalı;
+        src/dst/ports/count içermeli.
+        """
         packets = [_make_packet("10.0.0.1", dst_ip="8.8.8.8", dst_port=443)]
         result = TrafficAnalyzer(packets).analyze()
         cmap = result["connection_map"]
@@ -288,7 +290,9 @@ class TestConnectionMap:
         assert len(cmap) > 0
         entry = cmap[0]
         for field in ("src", "dst", "ports", "count"):
-            assert field in entry, f"connection_map dict'inde eksik alan: {field}"
+            assert field in entry, (
+                f"connection_map dict'inde eksik alan: {field}"
+            )
 
     def test_connection_map_ports_are_sorted(self):
         """Portlar sıralı (artan) olmalı."""
@@ -314,8 +318,8 @@ class TestConnectionMap:
         result = TrafficAnalyzer(packets).analyze()
         cmap = result["connection_map"]
         dst_ips = {e["dst"] for e in cmap if e["src"] == "172.16.0.1"}
-        assert "8.8.8.8"   in dst_ips
-        assert "1.1.1.1"   in dst_ips
+        assert "8.8.8.8" in dst_ips
+        assert "1.1.1.1" in dst_ips
         assert "192.0.2.1" in dst_ips
 
     def test_connection_map_count_matches_frequency(self):

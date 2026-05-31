@@ -398,4 +398,3 @@ class TestMarkdownReporter:
         assert "Kritik" in content
         assert "Yüksek" in content
         assert "Toplam" in content
-
