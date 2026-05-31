@@ -25,7 +25,7 @@ from modules.packet_engine.live_sniffer import LiveSniffer
 from reports.traffic_reporter import trafik_raporu_olustur
 from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 
-app = FastAPI(title="NetScanner Web Dashboard")
+app = FastAPI(title="NetSentry Web Dashboard")
 
 # Statik dosyalar ve şablonlar
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
