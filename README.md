@@ -5,45 +5,76 @@
 # 🛡️ NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-95%20passed-brightgreen?style=flat-square&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-73%25-brightgreen?style=flat-square) ![Flake8](https://img.shields.io/badge/flake8-0%20errors-brightgreen?style=flat-square) ![mypy](https://img.shields.io/badge/mypy-0%20errors-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/Tests-175%20passed-brightgreen?style=flat-square&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-78%25-brightgreen?style=flat-square) ![Flake8](https://img.shields.io/badge/flake8-0%20errors-brightgreen?style=flat-square) ![mypy](https://img.shields.io/badge/mypy-0%20errors-brightgreen?style=flat-square)
 
 ### 🎬 Sistem Demosu
 ![NetScanner Dashboard Demo](Demo/netscanner_demo.gif)
 
 **Üniversite Adı:** İstinye Üniversitesi  
 **Danışman/Eğitmen:** Keyvan Arasteh Abbasabad  
-**Geliştirici:** İrem Yasav
+**Ders Kodu:** BGT006  
+**Geliştirici:** İrem Yasav  
 
 NetScanner; ağ trafiğini derinlemesine analiz eden, PCAP dosyalarını okuyarak anormallik tespiti yapan ve Nmap entegrasyonu ile güvenlik açıklarını tespit eden modüler bir ağ güvenlik aracıdır. Proje, hem canlı ağ izleme hem de geçmiş trafik verilerinin detaylı istatistiksel raporlamasını sunar.
 
 ---
 
 ## 📑 İçindekiler
+- [Final Proje — Yeni Modüller](#-final-proje--yeni-modüller)
 - [Özellikler](#-özellikler)
 - [Proje Mimarisi](#-proje-mimarisi-modüler-yapı)
 - [Kurulum](#️-kurulum)
 - [Kullanım](#-kullanım)
 - [Docker ile Kullanım](#-docker-ile-kullanım)
+- [Test Coverage](#-test-coverage)
 - [Katkıda Bulunma](#-katkıda-bulunma)
 - [Lisans](#-lisans)
 
 ---
 
+## 🎓 Final Proje — Yeni Modüller
+
+Final projesi kapsamında vize modüllerine ek olarak aşağıdaki **4 yeni modül** geliştirilmiştir:
+
+| Modül | Zorluk | Açıklama |
+|:------|:-------|:---------|
+| **Full Vulnerability Scanner** | ⭐⭐⭐⭐⭐ | Tüm modülleri (Nmap + Trafik + API + Credential) zincirleyen otomatik tarama |
+| **Network Traffic Analyzer** | ⭐⭐⭐⭐⭐ | PCAP okuma, anomali tespiti (SYN Flood, DNS Tunneling, Data Exfiltration) |
+| **Credential Tester** | ⭐⭐⭐⭐ | Rate limiting, parola politikası ve account lockout tespiti |
+| **API Security Scanner** | ⭐⭐⭐⭐⭐ | OpenAPI parse, BOLA testi, OWASP API Top 10 kapsamlı değerlendirme |
+
+### CLI Kullanım Örnekleri
+
+```bash
+# Full Vulnerability Scanner (tüm modülleri zincirler)
+sudo python3 main.py --full-scan 192.168.1.1 --pcap trafik.pcap
+
+# API Security Scanner (OWASP API Top 10 + BOLA)
+python3 main.py --api-scan http://hedef:8080 --openapi-url http://hedef/openapi.json
+
+# Credential Tester (rate limit + lockout + parola politikası)
+python3 main.py --credential-test http://hedef/login
+```
+
+---
+
 ## 🚀 Özellikler
 
-* 🌐 **Web Dashboard (Yeni!):** Modern, koyu temalı ve Glassmorphism tasarımlı, FastAPI ve WebSocket destekli gelişmiş kontrol paneli.
-* 📦 **PCAP Analizi:** Ağ trafik dosyalarını (.pcap, .pcapng) okuma, ayrıştırma ve istatistiksel analiz (Artık Arayüzden Yüklenebilir).
-* 📡 **Canlı Trafik İzleme (Sniffing):** Ağ arayüzleri üzerinden gerçek zamanlı IPv4 ve IPv6 paket yakalama ve analiz etme.
-* 🛡️ **Nmap Entegrasyonu:** Hedef sistemler üzerinde detaylı port tarama, servis tespiti ve zafiyet analizi (Web Arayüzü Tetiklemeli).
-* 📊 **Protokol Analizi:** HTTP/HTTPS isteklerinin tespiti, DNS anormallikleri (örn. DNS tunneling) ve GeoIP destekli IP istatistikleri.
-* 🧠 **Anormallik ve Zafiyet Tespiti:** SYN Flood, Port Tarama, Veri Sızdırma (Exfiltration) ve şüpheli payload tespiti.
-* 📂 **Otomatik Raporlama:** JSON, HTML ve TXT formatında modüler merkezi arşivleme.
+* 🔗 **Full Vulnerability Scanner (Yeni!):** Tüm modülleri otomatik olarak sırayla çalıştıran zincir. Nmap → Trafik Analizi → API Güvenliği → Credential Testi → Birleşik Markdown Raporu.
+* 🔐 **Credential Tester (Yeni!):** HTTP(S) login endpoint'lerinde rate limiting tespiti (429), parola politikası analizi (OWASP Top 25 zayıf parola listesi) ve account lockout mekanizması testi.
+* 🌐 **API Security Scanner (Yeni!):** OpenAPI 3.x / Swagger 2.x spec parse, BOLA/IDOR tespiti, OWASP API Top 10 (API1–API10) kapsamlı güvenlik değerlendirmesi.
+* 📦 **PCAP Analizi:** Ağ trafik dosyalarını (.pcap, .pcapng) okuma, ayrıştırma ve istatistiksel analiz.
+* 📡 **Canlı Trafik İzleme (Sniffing):** Gerçek zamanlı IPv4/IPv6 paket yakalama ve anomali tespiti.
+* 🛡️ **Nmap Entegrasyonu:** Detaylı port tarama, servis tespiti ve NSE zafiyet analizi.
+* 📊 **Protokol Analizi:** HTTP/HTTPS, DNS tünelleme, GeoIP destekli IP istatistikleri.
+* 🧠 **Anomali Tespiti:** SYN Flood (DDoS), Port Tarama, Veri Sızdırma, HTTP Malicious Payload.
+* 📂 **Otomatik Raporlama:** JSON, HTML, TXT ve Markdown güvenlik raporu.
+* 🌐 **Web Dashboard:** FastAPI + WebSocket destekli modern kontrol paneli.
 
 ---
 
 ## 📂 Proje Mimarisi (Modüler Yapı)
 
-Proje, sürdürülebilir kod prensiplerine uygun olarak Katmanlı Mimari (Layered Architecture) ile geliştirilmiştir:
 
 | Klasör/Dosya Adı | Görev |
 | :--- | :--- |

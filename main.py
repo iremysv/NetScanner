@@ -13,6 +13,11 @@ from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
 from reports.traffic_reporter import trafik_raporu_olustur
 from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 
+# Final Proje — Yeni Modüller
+from modules.vuln_scanner.full_scanner import FullVulnerabilityScanner
+from modules.credential_tester.tester import CredentialTester
+from modules.api_scanner.scanner import APISecurityScanner
+
 
 def ana_menu() -> None:
     while True:
@@ -29,18 +34,22 @@ def ana_menu() -> None:
         print("\n[ TRAFİK ANALİZ MODÜLLERİ (PACKET ENGINE) ]")
         print("7- PCAP Ağ Trafiği Analizi ve Anomali Tespiti")
         print("8- Canlı Ağ İzleme (Live Sniffer) ve Tehdit Algılama")
+        print("\n[ FİNAL PROJE — YENİ MODÜLLER ]")
+        print("9-  Full Vulnerability Scanner (Otomatik Zincir)")
+        print("10- Credential Tester (Rate Limit / Lockout / Parola)")
+        print("11- API Security Scanner (OWASP API Top 10 + BOLA)")
         print("\n[ WEB ARAYÜZÜ ]")
-        print("9- Web Arayüzünü (Dashboard) Başlat")
-        print("\n10- Çıkış")
+        print("12- Web Arayüzünü (Dashboard) Başlat")
+        print("\n0 - Çıkış")
         print("=" * 55)
 
-        secim = input("\nSeçiminiz (1-10): ")
-        if secim == "10":
+        secim = input("\nSeçiminiz (0-12): ")
+        if secim == "0":
             print("[*] Program kapatılıyor. İyi çalışmalar İrem!")
             break
 
         # PCAP ve Sniffer Modülleri için IP isteme
-        if secim in ["7", "8", "9"]:
+        if secim in ["7", "8", "9", "10", "11", "12"]:
             if secim == "7":
                 dosya_yolu = input("Analiz edilecek .pcap dosyasının yolu: ")
                 if not dosya_yolu:
@@ -75,6 +84,60 @@ def ana_menu() -> None:
                     connection_map=sonuclar.get("connection_map"),
                 )
             elif secim == "9":
+                # Full Vulnerability Scanner
+                hedef_full = input("Hedef IP veya Domain: ")
+                if not hedef_full:
+                    continue
+                pcap_yolu = input(
+                    "PCAP dosyası yolu (opsiyonel, boş bırakılabilir): "
+                ).strip()
+                api_url = input(
+                    "API base URL (opsiyonel, örn: http://hedef/api): "
+                ).strip()
+                login_url = input(
+                    "Login URL (opsiyonel, credential testi için): "
+                ).strip()
+                scanner = FullVulnerabilityScanner(
+                    target=hedef_full,
+                    pcap_file=pcap_yolu or None,
+                    api_base_url=api_url or None,
+                    login_url=login_url or None,
+                )
+                scanner.run_full_scan()
+
+            elif secim == "10":
+                # Credential Tester
+                login_url_ct = input(
+                    "Login endpoint URL (örn: http://hedef/login): "
+                )
+                if not login_url_ct:
+                    continue
+                tester = CredentialTester(
+                    target_url=login_url_ct,
+                    delay_between_requests=0.3,
+                )
+                rapor = tester.run_all_tests()
+                print(rapor.summary)
+
+            elif secim == "11":
+                # API Security Scanner
+                api_base = input(
+                    "API base URL (örn: http://hedef:8080/api): "
+                )
+                if not api_base:
+                    continue
+                openapi_url = input(
+                    "OpenAPI/Swagger spec URL (opsiyonel): "
+                ).strip() or None
+                api_scanner = APISecurityScanner(
+                    base_url=api_base,
+                    timeout=8,
+                    delay=0.3,
+                )
+                api_rapor = api_scanner.scan(openapi_url=openapi_url)
+                print(api_rapor.summary)
+
+            elif secim == "12":
                 print(
                     "\n[*] Web Arayüzü Başlatılıyor... "
                     "Tarayıcınızdan http://localhost:8000 "
@@ -190,6 +253,47 @@ def main():
         help="Web arayüzünü (Dashboard) başlatır (http://localhost:8000)",
     )
 
+    # --- Final Proje Yeni Modüller ---
+    parser.add_argument(
+        "--full-scan",
+        metavar="HEDEF",
+        help=(
+            "Full Vulnerability Scanner: tüm modülleri zincirleyen "
+            "otomatik tarama (Nmap + Trafik + API + Credential)"
+        ),
+    )
+    parser.add_argument(
+        "--credential-test",
+        metavar="LOGIN_URL",
+        help=(
+            "Credential Tester: rate limiting, parola politikası "
+            "ve account lockout tespiti"
+        ),
+    )
+    parser.add_argument(
+        "--api-scan",
+        metavar="API_URL",
+        help=(
+            "API Security Scanner: OWASP API Top 10 ve BOLA tespiti "
+            "(OpenAPI/Swagger spec desteği ile)"
+        ),
+    )
+    parser.add_argument(
+        "--openapi-url",
+        metavar="SPEC_URL",
+        help="OpenAPI/Swagger spec URL'si (--api-scan ile kullanılır)",
+    )
+    parser.add_argument(
+        "--api-base-url",
+        metavar="URL",
+        help="Full scan için API base URL (opsiyonel)",
+    )
+    parser.add_argument(
+        "--login-url",
+        metavar="URL",
+        help="Full scan için login URL (opsiyonel)",
+    )
+
     args = parser.parse_args()
 
     # ------------------------------------------------------------------ #
@@ -281,6 +385,40 @@ def main():
             )
         except ImportError:
             print("[-] HATA: Web arayüzü bileşenleri bulunamadı.")
+
+    elif args.full_scan:
+        hedef = args.full_scan
+        print(f"[*] Full Vulnerability Scanner başlatılıyor → {hedef}")
+        scanner = FullVulnerabilityScanner(
+            target=hedef,
+            pcap_file=args.pcap,
+            api_base_url=getattr(args, "api_base_url", None),
+            login_url=getattr(args, "login_url", None),
+            openapi_url=getattr(args, "openapi_url", None),
+        )
+        scanner.run_full_scan()
+
+    elif args.credential_test:
+        login_url = args.credential_test
+        print(f"[*] Credential Tester başlatılıyor → {login_url}")
+        tester = CredentialTester(
+            target_url=login_url,
+            delay_between_requests=0.3,
+        )
+        rapor = tester.run_all_tests()
+        print(rapor.summary)
+
+    elif args.api_scan:
+        api_url = args.api_scan
+        openapi_url = getattr(args, "openapi_url", None)
+        print(f"[*] API Security Scanner başlatılıyor → {api_url}")
+        api_scanner = APISecurityScanner(
+            base_url=api_url,
+            timeout=8,
+            delay=0.3,
+        )
+        api_rapor = api_scanner.scan(openapi_url=openapi_url)
+        print(api_rapor.summary)
 
     else:
         parser.print_help()
