@@ -1,0 +1,14 @@
+--- NMAP TARAMA RAPORU ---
+Hedef: 127.0.0.1
+Tarih: 2026-06-02_21-24
+------------------------------
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-06-02 21:24 +0300
+Nmap scan report for localhost (127.0.0.1)
+Host is up (0.000033s latency).
+Not shown: 97 closed tcp ports (conn-refused)
+PORT      STATE SERVICE
+5000/tcp  open  upnp
+8000/tcp  open  http-alt
+49152/tcp open  unknown
+
+Nmap done: 1 IP address (1 host up) scanned in 0.02 seconds

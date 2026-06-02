@@ -1,0 +1,23 @@
+--- NETSCANNER TRAFİK ANALİZ RAPORU ---
+Tarih: 2026-06-02_21-23-43
+Toplam İncelenen Paket: 183
+----------------------------------------
+
+[PROTOKOL DAĞILIMI]
+  - DNS: 70 paket
+  - HTTP: 112 paket
+  - HTTPS: 1 paket
+
+[EN ÇOK TRAFİK ÜRETEN IP'LER (TOP TALKERS & OSINT)]
+  - 10.0.0.5: 111 paket [Konum: Yerel Ağ (Local)]
+  - 10.10.10.10: 60 paket [Konum: Yerel Ağ (Local)]
+  - 192.168.1.100: 10 paket [Konum: Yerel Ağ (Local)]
+  - 172.16.0.5: 1 paket [Konum: Yerel Ağ (Local)]
+  - 104.21.43.12: 1 paket [Konum: Canada - Toronto]
+
+[TESPİT EDİLEN ANOMALİLER]
+  ! DİKKAT [DNS_TUNNELING_SUSPICION]: IP: 10.10.10.10 -> 60 adet anormal DNS isteği tespit edildi.
+  ! DİKKAT [SYN_FLOOD_DDOS]: IP: 10.0.0.5 -> 110 adet sadece SYN paketi (ACK beklenmeyen) gönderildi.
+  ! DİKKAT [DATA_EXFILTRATION]: IP: 10.0.0.5 -> Aşırı büyük payload aktarımı (60040 byte) Hedef: 1.2.3.4
+
+----------------------------------------

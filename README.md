@@ -8,7 +8,7 @@
 ![Tests](https://img.shields.io/badge/Tests-175%20passed-success?style=for-the-badge&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-78.2%25-success?style=for-the-badge) ![Flake8](https://img.shields.io/badge/Code_Quality-Flake8--Passed-success?style=for-the-badge) ![mypy](https://img.shields.io/badge/Types-Mypy--Passed-success?style=for-the-badge)
 
 ### 🖥️ Sistem Kontrol Paneli (Web Dashboard)
-![NetSentry Dashboard Preview](Demo/netscanner_demo.webp)
+![NetSentry Dashboard Demo](Demo/netscanner_demo.gif)
 
 **Üniversite Adı:** İstinye Üniversitesi  
 **Ders Kodu:** BGT006  

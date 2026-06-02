@@ -1,0 +1,102 @@
+{
+    "total_packets": 183,
+    "top_talkers": [
+        {
+            "ip": "10.0.0.5",
+            "count": 111,
+            "location": "Yerel Ağ (Local)"
+        },
+        {
+            "ip": "10.10.10.10",
+            "count": 60,
+            "location": "Yerel Ağ (Local)"
+        },
+        {
+            "ip": "192.168.1.100",
+            "count": 10,
+            "location": "Yerel Ağ (Local)"
+        },
+        {
+            "ip": "172.16.0.5",
+            "count": 1,
+            "location": "Yerel Ağ (Local)"
+        },
+        {
+            "ip": "104.21.43.12",
+            "count": 1,
+            "location": "Canada - Toronto"
+        }
+    ],
+    "protocol_distribution": {
+        "DNS": 70,
+        "HTTP": 112,
+        "HTTPS": 1
+    },
+    "anomalies": [
+        {
+            "type": "DNS_TUNNELING_SUSPICION",
+            "source_ip": "10.10.10.10",
+            "details": "60 adet anormal DNS isteği tespit edildi."
+        },
+        {
+            "type": "SYN_FLOOD_DDOS",
+            "source_ip": "10.0.0.5",
+            "details": "110 adet sadece SYN paketi (ACK beklenmeyen) gönderildi."
+        },
+        {
+            "type": "DATA_EXFILTRATION",
+            "source_ip": "10.0.0.5",
+            "details": "Aşırı büyük payload aktarımı (60040 byte) Hedef: 1.2.3.4"
+        }
+    ],
+    "connection_map": [
+        {
+            "src": "10.0.0.5",
+            "dst": "192.168.1.1",
+            "ports": [
+                80
+            ],
+            "count": 111
+        },
+        {
+            "src": "10.0.0.5",
+            "dst": "1.2.3.4",
+            "ports": [
+                443
+            ],
+            "count": 111
+        },
+        {
+            "src": "10.10.10.10",
+            "dst": "1.1.1.1",
+            "ports": [
+                53
+            ],
+            "count": 60
+        },
+        {
+            "src": "192.168.1.100",
+            "dst": "8.8.8.8",
+            "ports": [
+                53
+            ],
+            "count": 10
+        },
+        {
+            "src": "172.16.0.5",
+            "dst": "192.168.1.200",
+            "ports": [
+                80
+            ],
+            "count": 1
+        },
+        {
+            "src": "104.21.43.12",
+            "dst": "192.168.1.100",
+            "ports": [
+                54321
+            ],
+            "count": 1
+        }
+    ]
+}
