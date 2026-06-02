@@ -315,7 +315,7 @@ class APISecurityScanner:
             for test_id in [1, 2, 99, 100]:
                 # Mevcut path'deki sayısal segmenti değiştir
                 import re
-                modified_path = re.sub(r"/\d+", f"/{test_id}", path)
+                modified_path = re.sub(r"/(?![vV]\d+)\d+", f"/{test_id}", path)
                 url = urljoin(self.base_url, modified_path)
 
                 try:

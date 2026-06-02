@@ -90,13 +90,14 @@ class TrafficAnalyzer:
 
             # HTTP DPI Anomaly (Örn: Basit sql/xss veya bot kontrolü)
             if protocol == "HTTP" and payload:
-                payload_lower = payload.lower()
+                payload_str = payload if isinstance(payload, str) else payload.decode("utf-8", errors="ignore")
+                payload_lower = payload_str.lower()
                 if (
                     "sql" in payload_lower
                     or "script" in payload_lower
                     or "curl" in payload_lower
                 ):
-                    self.suspicious_http.append((src_ip, payload))
+                    self.suspicious_http.append((src_ip, payload_str))
 
         # En aktif 10 IP'nin konumlarını OSINT ile bul
         top_talkers = self._get_top_talkers(10)

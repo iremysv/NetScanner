@@ -91,9 +91,9 @@ pip install -e ".[dev]"
 
 ## CI/CD Entegrasyonu
 
-Proje `.github/` dizininde CI workflow'u desteklemektedir. Coverage eşiği **%40** olarak yapılandırılmıştır (`Pyproject.toml → [tool.coverage.report]`).
+Proje `.github/` dizininde CI workflow'u desteklemektedir. Coverage eşiği **%70** olarak yapılandırılmıştır (`Pyproject.toml → [tool.coverage.report]`).
 
 ```toml
 [tool.coverage.report]
-fail_under = 40
+fail_under = 70
 ```

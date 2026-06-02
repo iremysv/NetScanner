@@ -20,6 +20,7 @@ class LiveSniffer:
         self.parsed_packets = []
         self._stop_event = threading.Event()
         self._sniff_thread = None
+        self._lock = threading.Lock()
 
     def _packet_handler(self, pkt):
         """
@@ -27,9 +28,9 @@ class LiveSniffer:
         çağrılan callback fonksiyonu.
         Paketi ayrıştırır ve self.parsed_packets listesine ekler.
         """
-        if IP in pkt or IPv6 in pkt:
-            ip_src = pkt[IP].src if IP in pkt else pkt[IPv6].src
-            ip_dst = pkt[IP].dst if IP in pkt else pkt[IPv6].dst
+        if pkt.haslayer(IP) or pkt.haslayer(IPv6):
+            ip_src = pkt[IP].src if pkt.haslayer(IP) else pkt[IPv6].src
+            ip_dst = pkt[IP].dst if pkt.haslayer(IP) else pkt[IPv6].dst
             length = len(pkt)
 
             protocol = "OTHER"
@@ -94,7 +95,8 @@ class LiveSniffer:
                 "dns_query": dns_query,
             }
 
-            self.parsed_packets.append(parsed_data)
+            with self._lock:
+                self.parsed_packets.append(parsed_data)
 
     def _sniff_worker(self, interface=None):
         """Arka planda sniffing işlemini yürüten İş parçacığı fonksiyonu."""
@@ -130,7 +132,8 @@ class LiveSniffer:
             return
 
         self._stop_event.clear()
-        self.parsed_packets = []
+        with self._lock:
+            self.parsed_packets = []
         self._sniff_thread = threading.Thread(
             target=self._sniff_worker, args=(interface,), daemon=True
         )
@@ -158,4 +161,5 @@ class LiveSniffer:
         """
         Yakalanan ve ayrıştırılan paketlerin listesini döndürür.
         """
-        return self.parsed_packets
+        with self._lock:
+            return list(self.parsed_packets)

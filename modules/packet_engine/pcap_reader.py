@@ -110,10 +110,10 @@ class PcapReader:
         Tek bir paketten kaynak/hedef, port ve
         Payload (DPI) bilgilerini çıkarır.
         """
-        if IP in pkt:
+        if pkt.haslayer(IP):
             ip_src = pkt[IP].src
             ip_dst = pkt[IP].dst
-        elif IPv6 in pkt:
+        elif pkt.haslayer(IPv6):
             ip_src = pkt[IPv6].src
             ip_dst = pkt[IPv6].dst
         else:
