@@ -2,151 +2,160 @@
   <img src="ISU_LOGO_TR.png" alt="İstinye Üniversitesi Logo" width="300">
 </p>
 
-# 🛡️ NetScanner: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
+# 🛡️ NetSentry: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
-![Tests](https://img.shields.io/badge/Tests-175%20passed-brightgreen?style=flat-square&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-78%25-brightgreen?style=flat-square) ![Flake8](https://img.shields.io/badge/flake8-0%20errors-brightgreen?style=flat-square) ![mypy](https://img.shields.io/badge/mypy-0%20errors-brightgreen?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=for-the-badge) ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Tests-175%20passed-success?style=for-the-badge&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-78.2%25-success?style=for-the-badge) ![Flake8](https://img.shields.io/badge/Code_Quality-Flake8--Passed-success?style=for-the-badge) ![mypy](https://img.shields.io/badge/Types-Mypy--Passed-success?style=for-the-badge)
 
-### 🎬 Sistem Demosu
-![NetScanner Dashboard Demo](Demo/netscanner_demo.gif)
+### 🖥️ Sistem Kontrol Paneli (Web Dashboard)
+![NetSentry Dashboard Preview](Demo/netscanner_demo.webp)
 
 **Üniversite Adı:** İstinye Üniversitesi  
-**Danışman/Eğitmen:** Keyvan Arasteh Abbasabad  
 **Ders Kodu:** BGT006  
+**Danışman/Eğitmen:** Keyvan Arasteh Abbasabad  
 **Geliştirici:** İrem Yasav  
 
-NetScanner; ağ trafiğini derinlemesine analiz eden, PCAP dosyalarını okuyarak anormallik tespiti yapan ve Nmap entegrasyonu ile güvenlik açıklarını tespit eden modüler bir ağ güvenlik aracıdır. Proje, hem canlı ağ izleme hem de geçmiş trafik verilerinin detaylı istatistiksel raporlamasını sunar.
+---
+
+NetSentry (NetScanner), ağ trafiğini derinlemesine analiz eden, Scapy tabanlı paket analiz motoruyla anomali tespiti yapan, Nmap entegrasyonu ile aktif zafiyet taramaları koşturan ve OWASP API Top 10 ile kimlik denetimi politikalarını test eden kapsamlı, modüler bir ağ güvenlik platformudur. Sistem, hem komut satırı (CLI) hem de gerçek zamanlı WebSocket destekli modern bir Web Dashboard (FastAPI) sunmaktadır.
 
 ---
 
 ## 📑 İçindekiler
-- [Final Proje — Yeni Modüller](#-final-proje--yeni-modüller)
+- [Gelişmiş Final Modülleri](#-gelişmiş-final-modülleri)
 - [Özellikler](#-özellikler)
-- [Proje Mimarisi](#-proje-mimarisi-modüler-yapı)
-- [Kurulum](#️-kurulum)
-- [Kullanım](#-kullanım)
-- [Docker ile Kullanım](#-docker-ile-kullanım)
-- [Test Coverage](#-test-coverage)
-- [Katkıda Bulunma](#-katkıda-bulunma)
+- [Proje Mimarisi](#-proje-mimarisi)
+- [Görsel Eğitim ve Rehberler](#-görsel-eğitim-ve-rehberler)
+- [Kurulum ve Gereksinimler](#️-kurulum-ve-gereksinimler)
+- [Kullanım Kılavuzu](#-kullanım-kılavuzu)
+- [Test ve Kalite Güvencesi](#-test-ve-kalite-güvencesi)
 - [Lisans](#-lisans)
 
 ---
 
-## 🎓 Final Proje — Yeni Modüller
+## 🎓 Gelişmiş Final Modülleri
 
-Final projesi kapsamında vize modüllerine ek olarak aşağıdaki **4 yeni modül** geliştirilmiştir:
+Vize sürümündeki ağ trafiği analiz motoru ve Nmap entegrasyonuna ek olarak, aşağıdaki **4 ana güvenlik modülü** geliştirilmiştir:
 
-| Modül | Açıklama |
-|:------|:---------|
-| **Full Vulnerability Scanner** | Tüm modülleri otomatik zincirleyen tarama aracı |
-| **Network Traffic Analyzer** | PCAP analizi ve anomali tespiti |
-| **Credential Tester** | Rate limiting, parola politikası ve lockout tespiti |
-| **API Security Scanner** | OWASP API Top 10 ve BOLA güvenlik taraması |
+| Modül | Görevi | Tespit Kapsamı |
+|:---|:---|:---|
+| **Full Vulnerability Scanner** | Otomatik Tarama Zinciri | Nmap Port Tarama ➔ NSE Zafiyet ➔ PCAP Trafik Analizi ➔ API Güvenliği ➔ Credential Testi. Sonuçları tek bir Markdown raporunda birleştirir. |
+| **API Security Scanner** | OWASP API Top 10 Değerlendirmesi | OpenAPI/Swagger parser, BOLA (IDOR) yetkilendirme açığı tespiti, yetkisiz erişim, aşırı veri ifşası ve rate limit testi. |
+| **Credential Tester** | Giriş Güvenlik Test Cihazı | Brute-force koruması testi, 429 Too Many Requests rate-limiting doğrulaması, hesap kilitleme (lockout) ve zayıf parola tespiti. |
+| **Traffic Packet Engine** | Gelişmiş Tehdit Algılama | SYN Flood DDoS saldırıları, Port Tarama kalıpları, DNS Tünelleme (DNS Tunneling) ve DNS DPI anomalileri. |
 
 ### CLI Kullanım Örnekleri
 
 ```bash
-# Full Vulnerability Scanner (tüm modülleri zincirler)
-sudo python3 main.py --full-scan 192.168.1.1 --pcap trafik.pcap
+# 1. Otomatik Zincir Taraması (Full Vulnerability Scan)
+sudo python3 main.py --full-scan 192.168.1.1 --pcap trafik.pcap --api-base-url http://192.168.1.1/api --login-url http://192.168.1.1/login
 
-# API Security Scanner (OWASP API Top 10 + BOLA)
-python3 main.py --api-scan http://hedef:8080 --openapi-url http://hedef/openapi.json
+# 2. OpenAPI Spec ile API Zafiyet Taraması
+python3 main.py --api-scan http://hedef-sunucu/api --openapi-url http://hedef-sunucu/openapi.json
 
-# Credential Tester (rate limit + lockout + parola politikası)
-python3 main.py --credential-test http://hedef/login
+# 3. Kimlik Doğrulama Güvenlik Denetimi
+python3 main.py --credential-test http://hedef-sunucu/login
 ```
 
 ---
 
 ## 🚀 Özellikler
 
-* 🔗 **Full Vulnerability Scanner (Yeni!):** Tüm modülleri otomatik olarak sırayla çalıştıran zincir. Nmap → Trafik Analizi → API Güvenliği → Credential Testi → Birleşik Markdown Raporu.
-* 🔐 **Credential Tester (Yeni!):** HTTP(S) login endpoint'lerinde rate limiting tespiti (429), parola politikası analizi (OWASP Top 25 zayıf parola listesi) ve account lockout mekanizması testi.
-* 🌐 **API Security Scanner (Yeni!):** OpenAPI 3.x / Swagger 2.x spec parse, BOLA/IDOR tespiti, OWASP API Top 10 (API1–API10) kapsamlı güvenlik değerlendirmesi.
-* 📦 **PCAP Analizi:** Ağ trafik dosyalarını (.pcap, .pcapng) okuma, ayrıştırma ve istatistiksel analiz.
-* 📡 **Canlı Trafik İzleme (Sniffing):** Gerçek zamanlı IPv4/IPv6 paket yakalama ve anomali tespiti.
-* 🛡️ **Nmap Entegrasyonu:** Detaylı port tarama, servis tespiti ve NSE zafiyet analizi.
-* 📊 **Protokol Analizi:** HTTP/HTTPS, DNS tünelleme, GeoIP destekli IP istatistikleri.
-* 🧠 **Anomali Tespiti:** SYN Flood (DDoS), Port Tarama, Veri Sızdırma, HTTP Malicious Payload.
-* 📂 **Otomatik Raporlama:** JSON, HTML, TXT ve Markdown güvenlik raporu.
-* 🌐 **Web Dashboard:** FastAPI + WebSocket destekli modern kontrol paneli.
+* 🔗 **Otomatik Tarama Zinciri:** Tek komutla tüm aşamaları sırayla çalıştırır, bir aşamadaki hata diğer aşamaları etkilemez ve birleşik bir Markdown sızma testi raporu oluşturur.
+* 🛡️ **DPI & Anomali Analizi:** DNS isteklerindeki alt alan adı boyutunu kontrol ederek veri sızdırmasını (Exfiltration) ve tünellemeyi yakalar.
+* 🗺️ **Bağlantı Haritası (Connection Map):** Ağ üzerindeki tüm kaynak ve hedef IP'lerin birbirleriyle iletişim kurduğu portları ve paket sıklıklarını listeler.
+* 🌐 **GeoIP & OSINT Entegrasyonu:** Harici IP adreslerini otomatik olarak `ip-api.com` üzerinden konumlandırır. Yerel IP'ler analiz edilmeden doğrudan lokal olarak işaretlenir.
+* 🧪 **Hata Toleransı (Thread Safety):** Canlı sniffing ve WebSocket veri akışında paylaşılan kaynaklar `threading.Lock` ile korunarak kilitlenme riski engellenmiştir.
 
 ---
 
-## 📂 Proje Mimarisi (Modüler Yapı)
+## 📂 Proje Mimarisi
 
-
-| Klasör/Dosya Adı | Görev |
-| :--- | :--- |
-| **`main.py`**          | CLI arayüzü ve merkezi uygulama girişi. |
-| **`core/`**            | Uygulamanın temel çekirdek fonksiyonları, yapılandırma ve log yönetimi. |
-| **`modules/`**         | Özelleşmiş alt modüller. |
-| ├── **`packet_engine/`**| PCAP okuyucu ve canlı trafik dinleme (sniffer) bileşenleri. |
-| └── **`nmap_integration/`** | Nmap araçları ile entegrasyon ve tarama yetenekleri. |
-| **`reports/`**         | Tarama ve analiz sonuçlarını raporlama mekanizması. |
-| **`utils/`**           | Yardımcı fonksiyonlar ve araçlar. |
-| **`requirements.txt`** | Python paket bağımlılıkları. |
-| **`Dockerfile`**       | Uygulamanın konteyner mimarisi yapılandırması. |
-
----
-
-## 🛠️ Kurulum
-
-### Gereksinimler
-Sisteminizde canlı paket analizi için **Npcap/WinPcap** (Windows) veya **libpcap** (Linux/Mac) kurulu olmalıdır.
-Ayrıca **Nmap**'in kurulu olması gerekmektedir:
-- **Debian / Ubuntu:** `sudo apt install nmap libpcap-dev`
-- **MacOS:** `brew install nmap`
-- **Windows:** [Nmap resmi sitesinden](https://nmap.org/download.html#windows) indirerek kurulumu tamamlayabilirsiniz.
-
-### Adımlar
-
-1. Proje dosyalarını bilgisayarınıza indirin ve dizine girin.
-2. Gerekli Python kütüphanelerini (örn. `scapy`, `python-nmap`) yükleyin:
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
----
-
-## 💻 Kullanım
-
-Uygulamayı başlatmak için ana modülü (`main.py`) **yönetici/root haklarıyla** (paket yakalama yetkisi için) çalıştırın:
-
-```bash
-sudo python3 main.py
+```
+NetScanner/
+├── main.py                    # Merkezi uygulama giriş noktası ve CLI yönetimi
+├── core/                      # Yapılandırma ve global ayarlar
+│   └── config.py              # Anomali eşik değerleri, port güvenlik bilgileri ve dizinler
+├── modules/                   # Çekirdek işlevsel modüller
+│   ├── packet_engine/         # Canlı paket dinleme (sniffer) ve PCAP okuyucu kütüphaneleri
+│   ├── nmap_integration/      # Port keşif, servis algılama ve subprocess Nmap wrapper'ı
+│   ├── api_scanner/           # OWASP API Top 10 zafiyet tarama mantığı
+│   ├── credential_tester/     # Auth endpoint analiz algoritmaları
+│   └── vuln_scanner/          # FullVulnerabilityScanner orkestrasyon sınıfı
+├── reports/                   # TXT, JSON, HTML ve Markdown formatlarında rapor üreteçleri
+├── web/                       # FastAPI Web Dashboard katmanı
+│   ├── app.py                 # API rota tanımları ve WebSocket bağlantı yöneticisi
+│   ├── static/                # Arayüz tasarımları, JS, CSS ve üniversite logoları
+│   └── templates/             # index.html ana şablon dosyası
+└── Tests/                     # pytest test senaryoları
 ```
 
-Uygulama size interaktif bir menü sunacaktır. İlgili adımları takip ederek canlı ağ dinleme, PCAP analizi veya Nmap taramalarınızı başlatabilirsiniz.
+---
+
+## 🎓 Görsel Eğitim ve Rehberler
+
+Proje kapsamında ağ güvenliği prensiplerini ve analiz mantığını kolayca kavramak için iki kılavuz eklenmiştir:
+1. **50 Adımda Ağ Analizi Kılavuzu:** [Docs/simple.md](file:///Users/iremyasav/Desktop/NetScanner/Docs/simple.md) dosyasında ağ katmanlarından anomali tespiti ve savunma mekanizmalarına kadar siber güvenlik temelleri açıklanmıştır.
+2. **Görsel Akış Şeması (Infographic):** [Docs/infographic.html](file:///Users/iremyasav/Desktop/NetScanner/Docs/infographic.html) dosyasında renk kodlu kartlarla sistemin ham veriyi nasıl işleyip korunma adımına aktardığı görselleştirilmiştir.
 
 ---
 
-## 🐳 Docker ile Kullanım
+## 🛠️ Kurulum ve Gereksinimler
 
-Uygulamayı izole bir konteyner ortamında çalıştırmak için (paket yakalama özelliklerinin Docker içinde çalışabilmesi için `--network host` yetkilerine dikkat edilmelidir):
+### 1. Sistem Bağımlılıkları
+Canlı ağ trafiğini dinlemek ve Nmap taramaları gerçekleştirmek için sisteminizde aşağıdaki araçların bulunması gerekir:
+* **Nmap:** Açık port taramaları için
+* **libpcap:** Python Scapy kütüphanesinin ağ kartını dinleyebilmesi için
 
-1. Docker imajını oluşturun:
-   ```bash
-   docker-compose build
-   ```
+**Kurulum Komutları:**
+* **macOS:** `brew install nmap`
+* **Linux (Debian/Ubuntu):** `sudo apt install nmap libpcap-dev`
+* **Windows:** [Nmap](https://nmap.org/) ve [Npcap](https://npcap.com/) kurucularını indirip çalıştırın.
 
-2. Taramayı başlatın:
-   ```bash
-   docker-compose up
-   ```
+### 2. Python Kütüphaneleri
+Gerekli bağımlılıkları yüklemek için sanal ortamınızda aşağıdaki komutu çalıştırın:
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## 🤝 Katkıda Bulunma
+## 💻 Kullanım Kılavuzu
 
-1. Bu depoyu fork'layın.
-2. Yeni bir özellik dalı oluşturun (`git checkout -b feature/YeniOzellik`).
-3. Değişikliklerinizi commit'leyin (`git commit -am 'Yeni özellik eklendi'`).
-4. Dalınıza push yapın (`git push origin feature/YeniOzellik`).
-5. Bir Pull Request açarak projeye katkıda bulunun.
+### Web Arayüzünü Başlatma
+Gelişmiş paneli yerel sunucunuzda çalıştırmak için:
+```bash
+python main.py --web
+```
+Ardından tarayıcınızdan **[http://localhost:8000](http://localhost:8000)** adresine giderek sistemi kullanabilirsiniz.
+
+### Canlı Ağ İzleme (CLI)
+Canlı sniffing başlatmak için (ağ arayüzüne erişim için yönetici/sudo hakları gerekir):
+```bash
+sudo python main.py --live
+```
+
+---
+
+## 🧪 Test ve Kalite Güvencesi
+
+NetSentry, sürekli entegrasyona (CI) hazır bir şekilde kapsamlı biçimde test edilmiştir.
+
+* **Toplam Başarılı Test:** 175 / 175
+* **Kod Kapsamı (Coverage):** %78.20 (Minimum baraj: %70)
+* **Linting & Statik Analiz:** Flake8 ve Mypy kontrollerinden sıfır hata ile geçmektedir.
+
+Testleri ve kapsama raporunu çalıştırmak için:
+```bash
+# Tüm testleri koşturun
+pytest
+
+# Detaylı kapsama raporu üretin
+pytest --cov
+```
 
 ---
 
 ## 📜 Lisans
 
-Bu proje **MIT Lisansı** ile lisanslanmıştır. Detaylar için `LICENSE` dosyasına göz atabilirsiniz.
+Bu proje **MIT Lisansı** kapsamında açık kaynaklı olarak sunulmuştur.
