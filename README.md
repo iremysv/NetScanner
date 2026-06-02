@@ -36,12 +36,12 @@ NetScanner; ağ trafiğini derinlemesine analiz eden, PCAP dosyalarını okuyara
 
 Final projesi kapsamında vize modüllerine ek olarak aşağıdaki **4 yeni modül** geliştirilmiştir:
 
-| Modül | Zorluk | Açıklama |
-|:------|:-------|:---------|
-| **Full Vulnerability Scanner** | ⭐⭐⭐⭐⭐ | Tüm modülleri (Nmap + Trafik + API + Credential) zincirleyen otomatik tarama |
-| **Network Traffic Analyzer** | ⭐⭐⭐⭐⭐ | PCAP okuma, anomali tespiti (SYN Flood, DNS Tunneling, Data Exfiltration) |
-| **Credential Tester** | ⭐⭐⭐⭐ | Rate limiting, parola politikası ve account lockout tespiti |
-| **API Security Scanner** | ⭐⭐⭐⭐⭐ | OpenAPI parse, BOLA testi, OWASP API Top 10 kapsamlı değerlendirme |
+| Modül | Açıklama |
+|:------|:---------|
+| **Full Vulnerability Scanner** | Tüm modülleri otomatik zincirleyen tarama aracı |
+| **Network Traffic Analyzer** | PCAP analizi ve anomali tespiti |
+| **Credential Tester** | Rate limiting, parola politikası ve lockout tespiti |
+| **API Security Scanner** | OWASP API Top 10 ve BOLA güvenlik taraması |
 
 ### CLI Kullanım Örnekleri
 

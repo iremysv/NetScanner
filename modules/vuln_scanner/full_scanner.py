@@ -30,7 +30,10 @@ from modules.nmap_integration.analyzer import analiz_et
 from modules.packet_engine.pcap_reader import PcapReader
 from modules.packet_engine.traffic_analyzer import TrafficAnalyzer
 from modules.api_scanner.scanner import APISecurityScanner, APISecurityReport
-from modules.credential_tester.tester import CredentialTester, CredentialTestReport
+from modules.credential_tester.tester import (
+    CredentialTester,
+    CredentialTestReport,
+)
 from reports.markdown_reporter import markdown_guvenlik_raporu_olustur
 from core import config as Ayarlar
 

@@ -49,6 +49,7 @@ OWASP_API_TOP10 = {
 # Veri Sınıfları
 # -------------------------------------------------------------------------
 
+
 @dataclass
 class APIFinding:
     """Tek bir güvenlik bulgusu."""
@@ -537,7 +538,8 @@ class APISecurityScanner:
                         "API gateway veya uygulama katmanında rate limiting "
                         "uygulayın. "
                         "429 Too Many Requests + Retry-After header döndürün. "
-                        "Token bucket veya sliding window algoritması kullanın."
+                        "Token bucket veya sliding window "
+                        "algoritması kullanın."
                     ),
                 ))
         except Exception as e:
@@ -744,10 +746,11 @@ class APISecurityScanner:
     def _build_owasp_coverage(
         self, findings: list[APIFinding]
     ) -> dict[str, bool]:
-        """Hangi OWASP kategorilerinin test edildiğini ve bulgu içerdiğini döner."""
+        """Hangi OWASP kategorilerinin test edildiğini ve bulgu
+
+        içerdiğini döner.
+        """
         tested_ids = {f.owasp_id for f in findings}
-        # Gerçekleştirilen tüm testler
-        all_tested = {"API1", "API2", "API3", "API4", "API7", "API8", "API9"}
         coverage: dict[str, bool] = {}
         for api_id in OWASP_API_TOP10:
             coverage[api_id] = api_id in tested_ids
@@ -776,10 +779,11 @@ class APISecurityScanner:
                 severity_count.get(f.severity, 0) + 1
             )
 
+        spec_source = report.spec_source or "Yok (common endpoints kullanıldı)"
         lines = [
             "=== API SECURITY SCANNER RAPORU ===",
             f"Hedef: {report.base_url}",
-            f"Spec: {report.spec_source or 'Yok (common endpoints kullanıldı)'}",
+            f"Spec: {spec_source}",
             f"Keşfedilen Endpoint Sayısı: {report.endpoints_discovered}",
             f"Toplam Bulgu: {len(report.findings)}",
             "",

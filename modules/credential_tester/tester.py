@@ -35,6 +35,7 @@ WEAK_PASSWORDS = [
 # Veri Sınıfları
 # -------------------------------------------------------------------------
 
+
 @dataclass
 class RateLimitResult:
     """Rate limiting test sonucu."""
@@ -285,7 +286,8 @@ class CredentialTester:
                 )
 
                 # 200 veya redirect → zayıf parola kabul edilmiş olabilir
-                # (Gerçek login doğrulaması değil, endpoint erişilebilirlik testi)
+                # (Gerçek login doğrulaması değil,
+                # endpoint erişilebilirlik testi)
                 if resp.status_code in (200, 302, 301):
                     # Yanıt içeriğinde "hata" veya "başarısız" geçmiyorsa
                     # parola kabul edilmiş sayılır
@@ -356,8 +358,9 @@ class CredentialTester:
                         lockout_status_code=423,
                         lockout_message="HTTP 423 Locked",
                         details=(
-                            f"{attempt}. denemede hesap kilitleme tespit edildi "
-                            f"(HTTP 423). Güvenlik mekanizması çalışıyor."
+                            f"{attempt}. denemede hesap kilitleme "
+                            "tespit edildi (HTTP 423). "
+                            "Güvenlik mekanizması çalışıyor."
                         ),
                     )
 
@@ -368,8 +371,9 @@ class CredentialTester:
                         lockout_status_code=resp.status_code,
                         lockout_message=resp.text[:200],
                         details=(
-                            f"{attempt}. denemede hesap kilitleme tespit edildi. "
-                            "Lockout mesajı yanıt gövdesinde bulundu."
+                            f"{attempt}. denemede hesap kilitleme "
+                            "tespit edildi. Lockout mesajı "
+                            "yanıt gövdesinde bulundu."
                         ),
                     )
 
@@ -380,7 +384,10 @@ class CredentialTester:
                 return LockoutResult(
                     lockout_detected=True,
                     failed_attempts_before_lock=attempt,
-                    lockout_message="Bağlantı kesildi (muhtemelen IP engellendi)",
+                    lockout_message=(
+                        "Bağlantı kesildi "
+                        "(muhtemelen IP engellendi)"
+                    ),
                     details=(
                         f"{attempt}. denemede bağlantı kesildi. "
                         "IP tabanlı engelleme uygulanıyor olabilir."
@@ -409,7 +416,10 @@ class CredentialTester:
 
         if report.rate_limit and not report.rate_limit.detected:
             risk_score += 30   # Rate limit yok → ciddi risk
-        if report.password_policy and report.password_policy.weak_passwords_found:
+        if (
+            report.password_policy
+            and report.password_policy.weak_passwords_found
+        ):
             risk_score += 25   # Zayıf parola kabul ediliyor
         if report.lockout and not report.lockout.lockout_detected:
             risk_score += 40   # Lockout yok → brute-force mümkün
@@ -425,7 +435,7 @@ class CredentialTester:
     def _generate_summary(self, report: CredentialTestReport) -> str:
         """İnsan tarafından okunabilir özet rapor metni üretir."""
         lines = [
-            f"=== CREDENTIAL TESTER RAPORU ===",
+            "=== CREDENTIAL TESTER RAPORU ===",
             f"Hedef: {report.target_url}",
             "",
         ]
