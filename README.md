@@ -121,8 +121,8 @@ NetScanner/
 ## 🎓 Görsel Eğitim ve Rehberler
 
 Proje kapsamında ağ güvenliği prensiplerini ve analiz mantığını kolayca kavramak için iki kılavuz eklenmiştir:
-1. **50 Adımda Ağ Analizi Kılavuzu:** [Docs/simple.md](file:///Users/iremyasav/Desktop/NetScanner/Docs/simple.md) dosyasında ağ katmanlarından anomali tespiti ve savunma mekanizmalarına kadar siber güvenlik temelleri açıklanmıştır.
-2. **Görsel Akış Şeması (Infographic):** [Docs/infographic.html](file:///Users/iremyasav/Desktop/NetScanner/Docs/infographic.html) dosyasında renk kodlu kartlarla sistemin ham veriyi nasıl işleyip korunma adımına aktardığı görselleştirilmiştir.
+1. **50 Adımda Ağ Analizi Kılavuzu:** [docs/simple.md](file:///Users/iremyasav/Desktop/NetScanner/docs/simple.md) dosyasında ağ katmanlarından anomali tespiti ve savunma mekanizmalarına kadar siber güvenlik temelleri açıklanmıştır.
+2. **Görsel Akış Şeması (Infographic):** [docs/infographic.html](file:///Users/iremyasav/Desktop/NetScanner/docs/infographic.html) dosyasında renk kodlu kartlarla sistemin ham veriyi nasıl işleyip korunma adımına aktardığı görselleştirilmiştir.
 
 ---
 
