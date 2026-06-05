@@ -1,21 +1,47 @@
-<p align="center">
-  <img src="ISU_LOGO_TR.png" alt="İstinye Üniversitesi Logo" width="300">
-</p>
+<div align="center">
+  <a href="https://istinye.edu.tr">
+    <img src="docs/assets/istinye-university-logo.webp" alt="İstinye Üniversitesi" width="100"/>
+  </a>
 
-# 🛡️ NetSentry: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
+  # NetSentry: Gelişmiş Ağ Trafiği ve Güvenlik Analiz Platformu
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-blue?style=for-the-badge&logo=python) ![Nmap](https://img.shields.io/badge/Tools-Nmap-orange?style=for-the-badge) ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge) ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
-![Tests](https://img.shields.io/badge/Tests-175%20passed-success?style=for-the-badge&logo=pytest) ![Coverage](https://img.shields.io/badge/Coverage-78.2%25-success?style=for-the-badge) ![Flake8](https://img.shields.io/badge/Code_Quality-Flake8--Passed-success?style=for-the-badge) ![mypy](https://img.shields.io/badge/Types-Mypy--Passed-success?style=for-the-badge)
+  [![GitHub](https://img.shields.io/badge/GitHub-Private--red?style=flat-square&logo=github)](https://github.com/iremysv/NetScanner)
+  [![Dil](https://img.shields.io/badge/Dil-Python-blue?style=flat-square)](https://github.com/iremysv/NetScanner)
+  [![Durum](https://img.shields.io/badge/Durum-Tamamland%C4%B1-green?style=flat-square)](https://github.com/iremysv/NetScanner)
+  [![Ders](https://img.shields.io/badge/Ders-BGT006-purple?style=flat-square)](https://github.com/iremysv/NetScanner)
+</div>
+
+---
+
+### Danışman Bilgisi (sabit — değiştirmeyin)
+
+| Ad Soyad | Keyvan Arasteh |
+| :--- | :--- |
+| **GitHub** | [@keyvanarasteh](https://github.com/keyvanarasteh) |
+| **E-posta** | [keyvan.arasteh@istinye.edu.tr](mailto:keyvan.arasteh@istinye.edu.tr) |
+| **LinkedIn** | [keyvanarasteh](https://linkedin.com/in/keyvanarasteh) |
+| **Web Sitesi** | [qline.tech](https://qline.tech) |
+
+### Öğrenci Bilgisi
+
+| Ad Soyad | İremnur Yasav |
+| :--- | :--- |
+| **Öğrenci No** | 2520****1019 |
+
+### Ders Bilgileri
+
+| Ders Adı | Sızma Testi |
+| :--- | :--- |
+| **Ders Kodu** | BGT006 |
+| **Kredi** | 3 AKTS |
+| **Ön Koşullar** | Ağ Temelleri, Linux CLI |
+| **Dönem** | 2025-2026 Bahar |
+
+---
 
 ### 🖥️ Sistem Kontrol Paneli (Web Dashboard)
 ![NetSentry Dashboard Demo](Demo/netscanner_demo.gif)
 
-**Üniversite Adı:** İstinye Üniversitesi  
-**Ders Kodu:** BGT006  
-**Danışman/Eğitmen:** Keyvan Arasteh Abbasabad  
-**Geliştirici:** İrem Yasav  
-
----
 
 NetSentry (NetScanner), ağ trafiğini derinlemesine analiz eden, Scapy tabanlı paket analiz motoruyla anomali tespiti yapan, Nmap entegrasyonu ile aktif zafiyet taramaları koşturan ve OWASP API Top 10 ile kimlik denetimi politikalarını test eden kapsamlı, modüler bir ağ güvenlik platformudur. Sistem, hem komut satırı (CLI) hem de gerçek zamanlı WebSocket destekli modern bir Web Dashboard (FastAPI) sunmaktadır.
 

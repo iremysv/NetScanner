@@ -6,7 +6,7 @@ Nmap tarama sonuçları ve trafik analizi bulgularını birleştirerek
 hoca tarafından beklenen formatta Markdown güvenlik raporu üretir.
 
 Rapor formatı:
-  # Sızma Testi Raporu — İrem Yasav
+  # Sızma Testi Raporu — İremnur Yasav
   ## Hedef Bilgisi
   ## Bulgular (Kritik / Yüksek / Orta / Düşük)
     - Açıklama / Risk / Öneri
@@ -168,7 +168,7 @@ def markdown_guvenlik_raporu_olustur(
     # 3. Markdown İçeriği Oluştur
     # ---------------------------------------------------------------
     lines: list[str] = []
-    lines.append("# Sızma Testi Raporu — İrem Yasav\n")
+    lines.append("# Sızma Testi Raporu — İremnur Yasav\n")
     lines.append("## Hedef Bilgisi\n")
     lines.append(f"- **URL/IP:** `{hedef}`")
     lines.append(f"- **Tarih:** {tarih}")

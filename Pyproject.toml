@@ -7,7 +7,7 @@ name = "NetScanner"
 version = "1.0.0"
 description = "Advanced Network Traffic and Security Analysis Platform"
 authors = [
-  { name="Irem Yasav" }
+  { name="Iremnur Yasav" }
 ]
 requires-python = ">=3.11"
 dependencies = [
