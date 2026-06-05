@@ -13,7 +13,7 @@
 
 ---
 
-### Danışman Bilgisi (sabit — değiştirmeyin)
+### Danışman Bilgisi
 
 | Ad Soyad | Keyvan Arasteh |
 | :--- | :--- |
