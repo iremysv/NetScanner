@@ -22,11 +22,6 @@
 | **LinkedIn** | [keyvanarasteh](https://linkedin.com/in/keyvanarasteh) |
 | **Web Sitesi** | [qline.tech](https://qline.tech) |
 
-### Öğrenci Bilgisi
-
-| Ad Soyad | İremnur Yasav |
-| :--- | :--- |
-| **Öğrenci No** | 2520****1019 |
 
 ### Ders Bilgileri
 
