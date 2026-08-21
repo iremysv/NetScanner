@@ -13,24 +13,6 @@
 
 ---
 
-### Danışman Bilgisi
-
-| Ad Soyad | Keyvan Arasteh |
-| :--- | :--- |
-| **GitHub** | [@keyvanarasteh](https://github.com/keyvanarasteh) |
-| **E-posta** | [keyvan.arasteh@istinye.edu.tr](mailto:keyvan.arasteh@istinye.edu.tr) |
-| **LinkedIn** | [keyvanarasteh](https://linkedin.com/in/keyvanarasteh) |
-| **Web Sitesi** | [qline.tech](https://qline.tech) |
-
-
-### Ders Bilgileri
-
-| Ders Adı | Sızma Testi |
-| :--- | :--- |
-| **Ders Kodu** | BGT006 |
-| **Kredi** | 3 AKTS |
-| **Ön Koşullar** | Ağ Temelleri, Linux CLI |
-| **Dönem** | 2025-2026 Bahar |
 
 ---
 
